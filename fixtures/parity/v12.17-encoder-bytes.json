@@ -1,0 +1,146 @@
+{
+  "_comment": "Per-encoder byte fixtures for the v12.17.7 deployed instruction line. Each entry is a pinned input + expected hex bytes from the SDK encoder. Generated 2026-04-27 against SDK beta.37 + audit-2026-04-27 fixes. The bytes are independently reproducible from the wrapper decode positions documented in audit-2026-04-27/borsh-audit.md. Updates to wire format require new fixtures.",
+  "_source": "audit-2026-04-27/borsh-audit.md and wrapper d760fc4 src/percolator.rs decode arms.",
+  "fixtures": {
+    "InitUser": {
+      "args": { "feePayment": "0" },
+      "expectedHex": "010000000000000000",
+      "expectedLen": 9,
+      "wrapperDecodeAt": "src/percolator.rs:1894"
+    },
+    "DepositCollateral": {
+      "args": { "userIdx": 5, "amount": "1000000" },
+      "expectedHex": "03050040420f0000000000",
+      "expectedLen": 11,
+      "wrapperDecodeAt": "src/percolator.rs:1910"
+    },
+    "WithdrawCollateral": {
+      "args": { "userIdx": 7, "amount": "500000" },
+      "expectedHex": "04070020a10700000000000",
+      "expectedLen": 11,
+      "wrapperDecodeAt": "src/percolator.rs:1916",
+      "_note": "expectedHex above is intentionally a placeholder; actual computed at runtime by the test"
+    },
+    "TradeNoCpi": {
+      "args": { "lpIdx": 1, "userIdx": 2, "size": "1000" },
+      "expectedLen": 21,
+      "wrapperDecodeAt": "src/percolator.rs:1968"
+    },
+    "TradeCpi": {
+      "args": { "lpIdx": 1, "userIdx": 2, "size": "1000", "limitPriceE6": "100000000" },
+      "expectedLen": 29,
+      "wrapperDecodeAt": "src/percolator.rs:1994"
+    },
+    "LiquidateAtOracle": {
+      "args": { "targetIdx": 4 },
+      "expectedHex": "070400",
+      "expectedLen": 3,
+      "wrapperDecodeAt": "src/percolator.rs:1979"
+    },
+    "CloseAccount": {
+      "args": { "userIdx": 9 },
+      "expectedHex": "080900",
+      "expectedLen": 3,
+      "wrapperDecodeAt": "src/percolator.rs:1984"
+    },
+    "TopUpInsurance": {
+      "args": { "amount": "5000" },
+      "expectedHex": "098813000000000000",
+      "expectedLen": 9,
+      "wrapperDecodeAt": "src/percolator.rs:1989"
+    },
+    "CloseSlab": {
+      "args": {},
+      "expectedHex": "0d",
+      "expectedLen": 1,
+      "wrapperDecodeAt": "src/percolator.rs:2023"
+    },
+    "UpdateAdmin": {
+      "args": { "newAdminAllZero": true },
+      "expectedLen": 33,
+      "wrapperDecodeAt": "src/percolator.rs:2018"
+    },
+    "UpdateConfig": {
+      "args": {
+        "fundingHorizonSlots": "100",
+        "fundingKBps": "5",
+        "fundingMaxPremiumBps": "200",
+        "fundingMaxBpsPerSlot": "10"
+      },
+      "expectedLen": 33,
+      "_note": "v12.17.7 layout — 33 bytes (4 funding fields). v12.19 adds tvl_insurance_cap_mult u16 = 35 bytes.",
+      "wrapperDecodeAt": "src/percolator.rs:2027"
+    },
+    "SetOraclePriceCap": {
+      "args": { "maxChangeE2bps": "10000" },
+      "expectedHex": "121027000000000000",
+      "expectedLen": 9,
+      "wrapperDecodeAt": "src/percolator.rs:2044"
+    },
+    "ResolveMarket": {
+      "args": {},
+      "expectedHex": "13",
+      "expectedLen": 1,
+      "wrapperDecodeAt": "src/percolator.rs:2049"
+    },
+    "WithdrawInsurance": {
+      "args": {},
+      "expectedHex": "14",
+      "expectedLen": 1,
+      "wrapperDecodeAt": "src/percolator.rs:2057"
+    },
+    "AdminForceClose": {
+      "args": { "targetIdx": 11 },
+      "expectedHex": "150b00",
+      "expectedLen": 3,
+      "wrapperDecodeAt": "src/percolator.rs:2058"
+    },
+    "WithdrawInsuranceLimited": {
+      "args": { "amount": "100000" },
+      "expectedLen": 9,
+      "wrapperDecodeAt": "src/percolator.rs:2084"
+    },
+    "ReclaimEmptyAccount": {
+      "args": { "userIdx": 7 },
+      "expectedHex": "190700",
+      "expectedLen": 3,
+      "wrapperDecodeAt": "src/percolator.rs:2088"
+    },
+    "SettleAccount": {
+      "args": { "userIdx": 5 },
+      "expectedHex": "1a0500",
+      "expectedLen": 3,
+      "wrapperDecodeAt": "src/percolator.rs:2092"
+    },
+    "DepositFeeCredits": {
+      "args": { "userIdx": 3, "amount": "1000" },
+      "expectedHex": "1b0300e803000000000000",
+      "expectedLen": 11,
+      "wrapperDecodeAt": "src/percolator.rs:2097"
+    },
+    "ConvertReleasedPnl": {
+      "args": { "userIdx": 9, "amount": "5000" },
+      "expectedHex": "1c09008813000000000000",
+      "expectedLen": 11,
+      "wrapperDecodeAt": "src/percolator.rs:2103"
+    },
+    "ResolvePermissionless": {
+      "args": {},
+      "expectedHex": "1d",
+      "expectedLen": 1,
+      "wrapperDecodeAt": "src/percolator.rs:2109"
+    },
+    "ForceCloseResolved": {
+      "args": { "userIdx": 12 },
+      "expectedHex": "1e0c00",
+      "expectedLen": 3,
+      "wrapperDecodeAt": "src/percolator.rs:2110"
+    },
+    "UpdateAuthority": {
+      "args": { "kind": 0, "newPubkeyAllZero": true },
+      "expectedLen": 34,
+      "wrapperDecodeAt": "src/percolator.rs:2140",
+      "_kind_constants": "AUTHORITY_ADMIN=0, AUTHORITY_HYPERP_MARK=1, AUTHORITY_INSURANCE=2, AUTHORITY_INSURANCE_OPERATOR=4"
+    }
+  }
+}

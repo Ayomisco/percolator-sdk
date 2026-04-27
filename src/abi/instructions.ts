@@ -694,11 +694,16 @@ export function encodeCloseSlab(): Uint8Array {
 }
 
 /**
- * UpdateConfig instruction data (33 bytes)
+ * UpdateConfig instruction data.
  *
- * v12.17: Only 4 funding parameters. Threshold/insurance parameters are set
- * at InitMarket and updated via dedicated instructions (SetRiskThreshold removed).
- * fundingInvScaleNotionalE6 removed (now computed on-chain from LP state).
+ * v12.17.7 (deployed): 33 bytes total (tag + 4 funding parameters).
+ * Threshold/insurance parameters are set at InitMarket and updated via
+ * dedicated instructions (SetRiskThreshold removed).
+ *
+ * v12.19+ (post wrapper commit 4ec51cc, 2026-04-21): adds a 5th field
+ * `tvl_insurance_cap_mult: u16` for protocol-enforced deposit cap.
+ * Wire format becomes 35 bytes. The v12.19 SDK target adds this field.
+ * See audit-2026-04-27/coverage-matrix.md G-1.
  */
 export interface UpdateConfigArgs {
   fundingHorizonSlots: bigint | string;

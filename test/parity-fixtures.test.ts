@@ -111,6 +111,7 @@ describe("Rust parity fixtures", () => {
       SetDisputeParams: IX_TAG.SetDisputeParams,
       SetLpCollateralParams: IX_TAG.SetLpCollateralParams,
       AcceptAdmin: IX_TAG.AcceptAdmin,
+      UpdateAuthority: IX_TAG.UpdateAuthority,
     };
 
     for (const entry of fixture.tags) {

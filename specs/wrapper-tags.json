@@ -320,6 +320,10 @@
     {
       "name": "AcceptAdmin",
       "tag": 82
+    },
+    {
+      "name": "UpdateAuthority",
+      "tag": 83
     }
   ]
 }
