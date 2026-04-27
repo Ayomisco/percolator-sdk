@@ -1,14 +1,15 @@
 # SDK audit — Heartbeat
 
-## STAGE II COMPLETE → starting STAGE III
+## STAGE III COMPLETE
 
-Cut 1.0.0-beta.39-presync on `sync/v12.19-sdk` (not pushed to npm).
-826 PASS / 31 SKIPPED. STAGE_II_FINAL.md present.
+Final tag `v2.0.0-rc.0` cut on `sync/v12.19-sdk`. 832 PASS / 31 SKIPPED.
+27 tests added across the three stages. STAGE_III_FINAL.md and FINAL.md present.
 
-UpdateConfig + InitMarket now target-aware. PERC-628 tags 59-63 un-
-throw under `target='v12.19'`. v12.20-design-notes.md covers deferred
-upstream commits.
+## End state
 
-## Stage III about to start
+- main: `1.0.0-beta.38` (`d1f908a`).
+- sync/v12.19-sdk: `2.0.0-rc.0` (commit on top of `beta.39-presync`).
+- Tags: `beta.39-presync`, `v2.0.0-rc.0`.
+- npm: NOT published. Branch policy holds until PR #88 + #271 merge.
 
-Two-track package split. Decision recorded next.
+## Stopping per brief
