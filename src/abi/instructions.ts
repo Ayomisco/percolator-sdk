@@ -227,10 +227,18 @@ export interface InitMarketArgs {
   invert: number;
   unitScale: number;
   initialMarkPriceE6: bigint | string;
+  /**
+   * Wire-format target. Defaults to `'v12.17'`.
+   * v12.19 drops `maxInsuranceFloor` (u128), `minOraclePriceCap` (u64), and
+   * `minInitialDeposit` (u128) from the wire format. 40 bytes shorter base
+   * payload (304 bytes vs 344). The pre-RiskParams trio + minInitialDeposit
+   * are silently ignored when `target === 'v12.19'`.
+   */
+  target?: WrapperTarget;
   // Fields between header and RiskParams (immutable after init, default 0 if omitted)
   maxMaintenanceFeePerSlot?: bigint | string;  // u128 — max maintenance fee per slot
-  maxInsuranceFloor?: bigint | string;         // u128 — max insurance floor
-  minOraclePriceCap?: bigint | string;         // u64 — min oracle price cap in e2bps
+  maxInsuranceFloor?: bigint | string;         // u128 — max insurance floor (v12.17 only)
+  minOraclePriceCap?: bigint | string;         // u64 — min oracle price cap in e2bps (v12.17 only)
   // RiskParams block (16 fields, read by read_risk_params on-chain)
   /**
    * @deprecated Use hMin and hMax instead (v12.15+). Accepted as fallback for both hMin and hMax
@@ -291,13 +299,15 @@ function encodeFeedId(feedId: string): Uint8Array {
   return bytes;
 }
 
-// tag(1) + admin(32) + mint(32) + feedId(32) + staleness(8) + conf(2) + invert(1) + scale(4) +
+// v12.17 layout: tag(1) + admin(32) + mint(32) + feedId(32) + staleness(8) + conf(2) + invert(1) + scale(4) +
 // markPrice(8) + maxMaintFee(16) + maxInsFloor(16) + minOracleCap(8) +
 // RiskParams: hMin(8) + mmBps(8) + imBps(8) + tradeFee(8) + maxAcct(8) + newAcctFee(16) +
 //   insFloor(16) + hMax(8) + maxStale(8) + liqFee(8) + liqCap(16) + resolveDev(8) +
 //   minLiqAbs(16) + minDeposit(16) + minMm(16) + minIm(16)
 // = 1+32+32+32+8+2+1+4+8+16+16+8 + 8+8+8+8+8+16+16+8+8+8+16+8+16+16+16+16 = 344
 const INIT_MARKET_BASE_LEN = 344; // v12.17: removed hMax/maxStale padding (was v12.15 u128 compat shim)
+// v12.19 layout: same as v12.17 except drops maxInsFloor(16) + minOracleCap(8) + minDeposit(16) = 40 bytes.
+const INIT_MARKET_BASE_LEN_V12_19 = 304;
 
 // Extended tail: u16(2) + u64*8(64) = 66 bytes (percolator.rs EXTENDED_TAIL_LEN = 2 + 8*8)
 const INIT_MARKET_EXTENDED_TAIL_LEN = 66;
@@ -385,7 +395,10 @@ export function encodeInitMarket(args: InitMarketArgs): Uint8Array {
   const hMin = args.hMin ?? args.warmupPeriodSlots ?? 0n;
   const hMax = args.hMax ?? args.warmupPeriodSlots ?? 0n;
 
-  const base = concatBytes(
+  const target: WrapperTarget = args.target ?? 'v12.17';
+
+  // Header common to both targets.
+  const header = concatBytes(
     encU8(IX_TAG.InitMarket),
     encPubkey(args.admin),
     encPubkey(args.collateralMint),
@@ -395,13 +408,19 @@ export function encodeInitMarket(args: InitMarketArgs): Uint8Array {
     encU8(args.invert),
     encU32(args.unitScale),
     encU64(args.initialMarkPriceE6),
-    // 3 fields between header and RiskParams (immutable after init)
     encU128(args.maxMaintenanceFeePerSlot ?? 0n),
+  );
+
+  // Pre-RiskParams trio (v12.17 only).
+  const preRiskParams_v17 = concatBytes(
     encU128(args.maxInsuranceFloor ?? 0n),
     encU64(args.minOraclePriceCap ?? 0n),
-    // RiskParams wire format — must match read_risk_params() in percolator.rs
-    // In v12.15: warmup_period_slots replaced by hMin/hMax. hMin is written first (same slot),
-    // hMax appended at end. liquidationBufferBps is read but discarded (kept for wire compat).
+  );
+
+  // RiskParams wire format — must match read_risk_params() in percolator.rs.
+  // v12.17 includes minInitialDeposit between minLiquidationAbs and minNonzeroMmReq.
+  // v12.19 drops minInitialDeposit. Other fields identical.
+  const riskParamsCommon = concatBytes(
     encU64(hMin),
     encU64(args.maintenanceMarginBps),
     encU64(args.initialMarginBps),
@@ -415,14 +434,23 @@ export function encodeInitMarket(args: InitMarketArgs): Uint8Array {
     encU128(args.liquidationFeeCap),
     encU64(args.liquidationBufferBps ?? 0n),     // v12.17: read as resolve_price_deviation_bps by program
     encU128(args.minLiquidationAbs),
-    encU128(args.minInitialDeposit),
+  );
+
+  const minInitialDeposit_v17 = encU128(args.minInitialDeposit);
+
+  const riskParamsTail = concatBytes(
     encU128(args.minNonzeroMmReq),
     encU128(args.minNonzeroImReq),
   );
 
-  if (base.length !== INIT_MARKET_BASE_LEN) {
+  const base = target === 'v12.19'
+    ? concatBytes(header, riskParamsCommon, riskParamsTail)
+    : concatBytes(header, preRiskParams_v17, riskParamsCommon, minInitialDeposit_v17, riskParamsTail);
+
+  const expectedLen = target === 'v12.19' ? INIT_MARKET_BASE_LEN_V12_19 : INIT_MARKET_BASE_LEN;
+  if (base.length !== expectedLen) {
     throw new Error(
-      `encodeInitMarket: base payload expected ${INIT_MARKET_BASE_LEN} bytes, got ${base.length}`,
+      `encodeInitMarket: base payload expected ${expectedLen} bytes, got ${base.length}`,
     );
   }
 
@@ -694,32 +722,55 @@ export function encodeCloseSlab(): Uint8Array {
 }
 
 /**
+ * Wrapper version target for encoders whose wire format diverges between
+ * v12.17.7 (mainnet deployed line) and v12.19 (PR #271 wrapper).
+ *
+ * Default `'v12.17'` preserves backward compat. Set explicitly to `'v12.19'`
+ * for callers building against the post-merge wrapper.
+ */
+export type WrapperTarget = 'v12.17' | 'v12.19';
+
+/**
  * UpdateConfig instruction data.
  *
  * v12.17.7 (deployed): 33 bytes total (tag + 4 funding parameters).
- * Threshold/insurance parameters are set at InitMarket and updated via
- * dedicated instructions (SetRiskThreshold removed).
- *
  * v12.19+ (post wrapper commit 4ec51cc, 2026-04-21): adds a 5th field
  * `tvl_insurance_cap_mult: u16` for protocol-enforced deposit cap.
- * Wire format becomes 35 bytes. The v12.19 SDK target adds this field.
- * See audit-2026-04-27/coverage-matrix.md G-1.
+ * Wire format becomes 35 bytes.
+ *
+ * Pass `target: 'v12.19'` and provide `tvlInsuranceCapMult` to encode the
+ * 5-field variant. Defaults preserve v12.17 wire format.
  */
 export interface UpdateConfigArgs {
   fundingHorizonSlots: bigint | string;
   fundingKBps: bigint | string;
   fundingMaxPremiumBps: bigint | string;
   fundingMaxBpsPerSlot: bigint | string;
+  /**
+   * v12.19+ only. u16 deposit cap multiplier. 0 disables the protocol-
+   * enforced cap. Ignored when `target === 'v12.17'`.
+   */
+  tvlInsuranceCapMult?: number;
+  /**
+   * Wire-format target. Defaults to `'v12.17'` for backward compat.
+   * Set `'v12.19'` to append `tvlInsuranceCapMult` and produce a 35-byte
+   * payload.
+   */
+  target?: WrapperTarget;
 }
 
 export function encodeUpdateConfig(args: UpdateConfigArgs): Uint8Array {
-  return concatBytes(
+  const base = concatBytes(
     encU8(IX_TAG.UpdateConfig),
     encU64(args.fundingHorizonSlots),
     encU64(args.fundingKBps),
     encI64(args.fundingMaxPremiumBps),  // Rust: i64 (can be negative)
     encI64(args.fundingMaxBpsPerSlot),  // Rust: i64 (can be negative)
   );
+  if (args.target === 'v12.19') {
+    return concatBytes(base, encU16(args.tvlInsuranceCapMult ?? 0));
+  }
+  return base;
 }
 
 /**
@@ -1382,11 +1433,27 @@ export function encodeSlashCreationDeposit(): Uint8Array {
 export interface InitSharedVaultArgs {
   epochDurationSlots: bigint | string;
   maxMarketExposureBps: number;
+  /**
+   * Wrapper target. v12.17.7 deployed mainnet does NOT reach the PERC-628
+   * shared-vault handlers. v12.19 (PR #271 wrapper) has live handlers.
+   * Default is `'v12.17'` and throws to preserve safety.
+   */
+  target?: WrapperTarget;
 }
 
 export function encodeInitSharedVault(args: InitSharedVaultArgs): Uint8Array {
-  void args;
-  return removedInstruction("InitSharedVault", IX_TAG.InitSharedVault);
+  if ((args.target ?? 'v12.17') !== 'v12.19') {
+    return removedInstruction(
+      "InitSharedVault",
+      IX_TAG.InitSharedVault,
+      "set target='v12.19' for the PR #271 wrapper line",
+    );
+  }
+  return concatBytes(
+    encU8(IX_TAG.InitSharedVault),
+    encU64(args.epochDurationSlots),
+    encU16(args.maxMarketExposureBps),
+  );
 }
 
 /**
@@ -1404,11 +1471,18 @@ export function encodeInitSharedVault(args: InitSharedVaultArgs): Uint8Array {
  */
 export interface AllocateMarketArgs {
   amount: bigint | string;
+  target?: WrapperTarget;
 }
 
 export function encodeAllocateMarket(args: AllocateMarketArgs): Uint8Array {
-  void args;
-  return removedInstruction("AllocateMarket", IX_TAG.AllocateMarket);
+  if ((args.target ?? 'v12.17') !== 'v12.19') {
+    return removedInstruction(
+      "AllocateMarket",
+      IX_TAG.AllocateMarket,
+      "set target='v12.19' for the PR #271 wrapper line",
+    );
+  }
+  return concatBytes(encU8(IX_TAG.AllocateMarket), encU128(args.amount));
 }
 
 /**
@@ -1425,11 +1499,18 @@ export function encodeAllocateMarket(args: AllocateMarketArgs): Uint8Array {
  */
 export interface QueueWithdrawalSVArgs {
   lpAmount: bigint | string;
+  target?: WrapperTarget;
 }
 
 export function encodeQueueWithdrawalSV(args: QueueWithdrawalSVArgs): Uint8Array {
-  void args;
-  return removedInstruction("QueueWithdrawalSV", IX_TAG.QueueWithdrawalSV);
+  if ((args.target ?? 'v12.17') !== 'v12.19') {
+    return removedInstruction(
+      "QueueWithdrawalSV",
+      IX_TAG.QueueWithdrawalSV,
+      "set target='v12.19' for the PR #271 wrapper line",
+    );
+  }
+  return concatBytes(encU8(IX_TAG.QueueWithdrawalSV), encU64(args.lpAmount));
 }
 
 /**
@@ -1448,8 +1529,19 @@ export function encodeQueueWithdrawalSV(args: QueueWithdrawalSVArgs): Uint8Array
  *   6. []                 Vault authority
  *   7. []                 Token program
  */
-export function encodeClaimEpochWithdrawal(): Uint8Array {
-  return removedInstruction("ClaimEpochWithdrawal", IX_TAG.ClaimEpochWithdrawal);
+export interface ClaimEpochWithdrawalArgs {
+  target?: WrapperTarget;
+}
+
+export function encodeClaimEpochWithdrawal(args: ClaimEpochWithdrawalArgs = {}): Uint8Array {
+  if ((args.target ?? 'v12.17') !== 'v12.19') {
+    return removedInstruction(
+      "ClaimEpochWithdrawal",
+      IX_TAG.ClaimEpochWithdrawal,
+      "set target='v12.19' for the PR #271 wrapper line",
+    );
+  }
+  return encU8(IX_TAG.ClaimEpochWithdrawal);
 }
 
 /**
@@ -1462,8 +1554,19 @@ export function encodeClaimEpochWithdrawal(): Uint8Array {
  *   0. [signer]           Caller (anyone)
  *   1. [writable]         Shared vault PDA
  */
-export function encodeAdvanceEpoch(): Uint8Array {
-  return removedInstruction("AdvanceEpoch", IX_TAG.AdvanceEpoch);
+export interface AdvanceEpochArgs {
+  target?: WrapperTarget;
+}
+
+export function encodeAdvanceEpoch(args: AdvanceEpochArgs = {}): Uint8Array {
+  if ((args.target ?? 'v12.17') !== 'v12.19') {
+    return removedInstruction(
+      "AdvanceEpoch",
+      IX_TAG.AdvanceEpoch,
+      "set target='v12.19' for the PR #271 wrapper line",
+    );
+  }
+  return encU8(IX_TAG.AdvanceEpoch);
 }
 
 // PERC-628: Tag 63 ─────────────────────────────────────────────────────────

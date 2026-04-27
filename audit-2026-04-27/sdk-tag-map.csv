@@ -1,0 +1,83 @@
+tag_byte,sdk_key,encoder_fn,encoder_line,accounts_const,parity_fixture,parity_test,note
+0,InitMarket,encodeInitMarket,377,ACCOUNTS_INIT_MARKET (line 27),no,test/encode.test.ts,
+1,InitUser,encodeInitUser,446,ACCOUNTS_INIT_USER (line 42),no,test/encode.test.ts,
+2,InitLP,encodeInitLP,459,ACCOUNTS_INIT_LP (line 62),no,test/encode.test.ts,
+3,DepositCollateral,encodeDepositCollateral,476,ACCOUNTS_DEPOSIT_COLLATERAL (line 74),no,test/encode.test.ts,
+4,WithdrawCollateral,encodeWithdrawCollateral,492,ACCOUNTS_WITHDRAW_COLLATERAL (line 86),no,test/encode.test.ts,
+5,KeeperCrank,encodeKeeperCrank,533,ACCOUNTS_KEEPER_CRANK (line 100),no,test/encode.test.ts,
+6,TradeNoCpi,encodeTradeNoCpi,560,ACCOUNTS_TRADE_NOCPI (line 111),no,test/encode.test.ts,
+7,LiquidateAtOracle,encodeLiquidateAtOracle,576,ACCOUNTS_LIQUIDATE_AT_ORACLE (line 122),no,test/encode.test.ts,
+8,CloseAccount,encodeCloseAccount,590,ACCOUNTS_CLOSE_ACCOUNT (line 132),no,test/encode.test.ts,
+9,TopUpInsurance,encodeTopUpInsurance,601,ACCOUNTS_TOPUP_INSURANCE (line 146),no,test/encode.test.ts,
+10,TradeCpi,encodeTradeCpi,621,ACCOUNTS_TRADE_CPI (line 157),no,test/encode.test.ts,
+11,SetRiskThreshold,encodeSetRiskThreshold (throws),668,ACCOUNTS_SET_RISK_THRESHOLD (line 171),no,no,DEPRECATED — wrapper rejects
+12,UpdateAdmin,encodeUpdateAdmin,679,ACCOUNTS_UPDATE_ADMIN (line 179),no,test/encode.test.ts,
+13,CloseSlab,encodeCloseSlab,686,ACCOUNTS_CLOSE_SLAB (line 207),no,test/encode.test.ts,
+14,UpdateConfig,encodeUpdateConfig,704,ACCOUNTS_UPDATE_CONFIG (line 219),no,test/encode.test.ts,WIRE-FORMAT-DRIFT: SDK encodes 4 fields but wrapper decodes 5 (adds tvl_insurance_cap_mult u16 at end)
+15,SetMaintenanceFee,encodeSetMaintenanceFee (throws),723,ACCOUNTS_SET_MAINTENANCE_FEE (line 227),no,no,DEPRECATED — wrapper rejects
+18,SetOraclePriceCap,encodeSetOraclePriceCap,745,ACCOUNTS_SET_ORACLE_PRICE_CAP (line 236),no,no,
+19,ResolveMarket,encodeResolveMarket,757,ACCOUNTS_RESOLVE_MARKET (line 245),no,no,
+20,WithdrawInsurance,encodeWithdrawInsurance,765,ACCOUNTS_WITHDRAW_INSURANCE (line 254),no,no,
+21,AdminForceClose,encodeAdminForceClose,777,ACCOUNTS_ADMIN_FORCE_CLOSE (line 531),no,no,
+22,SetInsuranceWithdrawPolicy,encodeSetInsuranceWithdrawPolicy,1777,(no ACCOUNTS_),no,no,MISSING_ACCOUNTS_SPEC
+22,UpdateRiskParams (alias-throws),encodeUpdateRiskParams,796,n/a,no,no,DEPRECATED alias
+23,WithdrawInsuranceLimited,encodeWithdrawInsuranceLimited,1787,ACCOUNTS_WITHDRAW_INSURANCE_LIMITED_RESOLVED+_LIVE (line 270/280),no,no,
+23,RenounceAdmin (alias-throws),encodeRenounceAdmin,820,n/a,no,no,DEPRECATED alias
+24,QueryLpFees,(no encoder),n/a,(no ACCOUNTS_),no,no,DEAD_TAG_BOTH_SIDES — wrapper has no decode arm
+25,ReclaimEmptyAccount,(no encoder),n/a,(no ACCOUNTS_),no,no,MISSING_ENCODER and MISSING_ACCOUNTS_SPEC — wrapper handler exists
+26,SettleAccount,(no encoder),n/a,(no ACCOUNTS_),no,no,MISSING_ENCODER — wrapper handler exists
+27,DepositFeeCredits,(no encoder),n/a,(no ACCOUNTS_),no,no,MISSING_ENCODER — wrapper handler exists
+28,ConvertReleasedPnl,(no encoder),n/a,(no ACCOUNTS_),no,no,MISSING_ENCODER — wrapper handler exists
+29,ResolvePermissionless,encodeResolvePermissionless,1792,ACCOUNTS_RESOLVE_PERMISSIONLESS (line 515),no,no,
+30,ForceCloseResolved,encodeForceCloseResolved,1797,ACCOUNTS_FORCE_CLOSE_RESOLVED (line 521),no,no,
+32,SetPythOracle,encodeSetPythOracle (throws),912,n/a,no,no,DEPRECATED — wrapper rejects
+33,UpdateMarkPrice,encodeUpdateMarkPrice (throws),951,n/a,no,no,DEPRECATED — wrapper rejects
+34,UpdateHyperpMark,encodeUpdateHyperpMark,1013,ACCOUNTS_UPDATE_HYPERP_MARK (line 588),no,no,
+35,TradeCpiV2,encodeTradeCpiV2 (throws),643,n/a,no,no,DEPRECATED — wrapper rejects
+36,UnresolveMarket,encodeUnresolveMarket (throws),655,n/a,no,no,DEPRECATED — wrapper rejects
+37,CreateLpVault,encodeCreateLpVault,1802,ACCOUNTS_CREATE_LP_VAULT (line 594),no,no,
+38,LpVaultDeposit,encodeLpVaultDeposit,1811,ACCOUNTS_LP_VAULT_DEPOSIT (line 605),no,no,
+39,LpVaultWithdraw,encodeLpVaultWithdraw,877,ACCOUNTS_LP_VAULT_WITHDRAW (line 421),no,no,
+40,LpVaultCrankFees,encodeLpVaultCrankFees,1816,ACCOUNTS_LP_VAULT_CRANK_FEES (line 617),no,no,
+41,FundMarketInsurance,encodeFundMarketInsurance,1025,ACCOUNTS_FUND_MARKET_INSURANCE (line 438),no,no,
+42,SetInsuranceIsolation,encodeSetInsuranceIsolation (throws),1033,ACCOUNTS_SET_INSURANCE_ISOLATION (line 450),no,no,DEPRECATED — wrapper has no decode arm
+43,ChallengeSettlement,encodeChallengeSettlement,1821,ACCOUNTS_CHALLENGE_SETTLEMENT (line 622),no,no,
+44,ResolveDispute,encodeResolveDispute,1826,ACCOUNTS_RESOLVE_DISPUTE (line 632),no,no,
+45,DepositLpCollateral,encodeDepositLpCollateral,1831,ACCOUNTS_DEPOSIT_LP_COLLATERAL (line 642),no,no,
+46,WithdrawLpCollateral,encodeWithdrawLpCollateral,1836,ACCOUNTS_WITHDRAW_LP_COLLATERAL (line 652),no,no,
+47,QueueWithdrawal,encodeQueueWithdrawal,1067,ACCOUNTS_QUEUE_WITHDRAWAL (line 463),no,no,
+48,ClaimQueuedWithdrawal,encodeClaimQueuedWithdrawal,1081,ACCOUNTS_CLAIM_QUEUED_WITHDRAWAL (line 475),no,no,
+49,CancelQueuedWithdrawal,encodeCancelQueuedWithdrawal,1094,ACCOUNTS_CANCEL_QUEUED_WITHDRAWAL (line 492),no,no,
+50,ExecuteAdl,encodeExecuteAdl,1124,ACCOUNTS_EXECUTE_ADL (line 508),no,no,
+51,CloseStaleSlabs,encodeCloseStaleSlabs,1141,ACCOUNTS_CLOSE_STALE_SLABS (line 550),no,no,
+52,ReclaimSlabRent,encodeReclaimSlabRent,1154,ACCOUNTS_RECLAIM_SLAB_RENT (line 559),no,no,
+53,AuditCrank,encodeAuditCrank,1176,ACCOUNTS_AUDIT_CRANK (line 572),no,no,
+54,SetOffsetPair,encodeSetOffsetPair,1841,ACCOUNTS_SET_OFFSET_PAIR (line 663),no,no,
+55,AttestCrossMargin,encodeAttestCrossMargin,1846,ACCOUNTS_ATTEST_CROSS_MARGIN (line 671),no,no,
+56,AdvanceOraclePhase,encodeAdvanceOraclePhase,1276,ACCOUNTS_ADVANCE_ORACLE_PHASE (line 584),no,no,
+58,SlashCreationDeposit,encodeSlashCreationDeposit (throws),1353,n/a,no,no,DEPRECATED — wrapper has no decode arm
+59,InitSharedVault,encodeInitSharedVault (throws),1376,n/a,no,no,DEPRECATED-but-wrapper-has-handler — sdk throws but tag exists in wrapper
+60,AllocateMarket,encodeAllocateMarket (throws),1398,n/a,no,no,DEPRECATED-but-wrapper-has-handler
+61,QueueWithdrawalSV,encodeQueueWithdrawalSV (throws),1419,n/a,no,no,DEPRECATED-but-wrapper-has-handler
+62,ClaimEpochWithdrawal,encodeClaimEpochWithdrawal (throws),1440,n/a,no,no,DEPRECATED-but-wrapper-has-handler
+63,AdvanceEpoch,encodeAdvanceEpoch (throws),1454,n/a,no,no,DEPRECATED-but-wrapper-has-handler
+64,MintPositionNft,encodeMintPositionNft,1527,ACCOUNTS_MINT_POSITION_NFT (line 721),no,no,
+65,TransferPositionOwnership,encodeTransferPositionOwnership,1553,ACCOUNTS_TRANSFER_POSITION_OWNERSHIP (line 738),no,no,
+66,BurnPositionNft,encodeBurnPositionNft,1578,ACCOUNTS_BURN_POSITION_NFT (line 753),no,no,
+67,SetPendingSettlement,encodeSetPendingSettlement,1600,ACCOUNTS_SET_PENDING_SETTLEMENT (line 768),no,no,
+68,ClearPendingSettlement,encodeClearPendingSettlement,1621,ACCOUNTS_CLEAR_PENDING_SETTLEMENT (line 779),no,no,
+69,TransferOwnershipCpi,encodeTransferOwnershipCpi,1644,ACCOUNTS_TRANSFER_OWNERSHIP_CPI (line 785),no,no,
+70,SetWalletCap,encodeSetWalletCap,1697,ACCOUNTS_SET_WALLET_CAP (line 799),no,no,
+71,SetOiImbalanceHardBlock,encodeSetOiImbalanceHardBlock,1487,ACCOUNTS_SET_OI_IMBALANCE_HARD_BLOCK (line 688),no,no,
+72,RescueOrphanVault,encodeRescueOrphanVault,1851,ACCOUNTS_RESCUE_ORPHAN_VAULT (line 804),no,no,
+73,CloseOrphanSlab,encodeCloseOrphanSlab,1856,ACCOUNTS_CLOSE_ORPHAN_SLAB (line 813),no,no,
+74,SetDexPool,encodeSetDexPool,1861,ACCOUNTS_SET_DEX_POOL (line 828),no,no,
+75,InitMatcherCtx,encodeInitMatcherCtx,1749,ACCOUNTS_INIT_MATCHER_CTX (line 844),no,no,
+76,PauseMarket,encodePauseMarket,885,ACCOUNTS_PAUSE_MARKET (line 288),no,no,
+77,UnpauseMarket,encodeUnpauseMarket,893,ACCOUNTS_UNPAUSE_MARKET (line 296),no,no,
+78,SetMaxPnlCap,encodeSetMaxPnlCap,1905,ACCOUNTS_SET_MAX_PNL_CAP (line 693),no,no,
+79,SetOiCapMultiplier,encodeSetOiCapMultiplier,1924,ACCOUNTS_SET_OI_CAP_MULTIPLIER (line 698),no,no,
+80,SetDisputeParams,encodeSetDisputeParams,1958,ACCOUNTS_SET_DISPUTE_PARAMS (line 703),no,no,
+81,SetLpCollateralParams,encodeSetLpCollateralParams,1983,ACCOUNTS_SET_LP_COLLATERAL_PARAMS (line 708),no,no,
+82,AcceptAdmin,encodeAcceptAdmin,2015,ACCOUNTS_ACCEPT_ADMIN (line 191),no,no,
+83,(NOT_PRESENT_IN_SDK),(no encoder),n/a,(no ACCOUNTS_),no,no,MISSING_ENCODER — UpdateAuthority added in v12.18.x; not in IX_TAG nor encoder file

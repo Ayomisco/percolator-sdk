@@ -1,0 +1,85 @@
+tag_byte,variant,handler_fn,handler_line,params_anchor,accounts_count,signer_indices,writable_indices,in_v12.17,in_v12.19
+0,InitMarket,handle_init_market,7457,src/percolator.rs:1467 (enum) decode 1789,9,0,"0,1,3,4,5,6,7",yes,yes
+1,InitUser,handle_init_user,7859,decode 1894,4,0,"0,1,2,3",yes,yes
+2,InitLP,handle_init_lp,7951,decode 1899,5,0,"0,1,2,3,4",yes,yes
+3,DepositCollateral,handle_deposit_collateral,8044,decode 1910,6,0,"0,1,2,3",yes,yes
+4,WithdrawCollateral,handle_withdraw_collateral,8123,decode 1916,8,0,"0,1,2,3,4",yes,yes
+5,KeeperCrank,handle_keeper_crank,8254,decode 1922,4,0,"0,1",yes,yes
+6,TradeNoCpi,handle_trade_no_cpi,8477,decode 1968,5,0,"0,1",yes,yes
+7,LiquidateAtOracle,handle_liquidate_at_oracle,9024,decode 1979,4,0,"0,1",yes,yes
+8,CloseAccount,handle_close_account,9112,decode 1984,6,0,"0,1,2,3,4",yes,yes
+9,TopUpInsurance,handle_top_up_insurance,9220,decode 1989,5,0,"0,1,2,3,4",yes,yes
+10,TradeCpi,handle_trade_cpi,8633,decode 1994,12,0,"0,1,2,3",yes,yes
+11,REJECTED_SetRiskThreshold,decode_only,2011,decode 2007,n/a,n/a,n/a,no,no
+12,UpdateAdmin,handle_update_admin,9317,decode 2018,2,0,"0,1",yes,yes
+13,CloseSlab,handle_close_slab,~9450,decode 2023,3,0,"0,1,2",yes,yes
+14,UpdateConfig,handle_update_config,~9500,decode 2027,3,0,"0,1,2",yes,yes
+15,REJECTED_SetMaintenanceFee,decode_only,2011,decode 2007,n/a,n/a,n/a,no,no
+16,REJECTED_PhaseG_PushOracle,decode_only,2043,decode 2042,n/a,n/a,n/a,no,no
+17,REJECTED_PhaseG_PushOracle,decode_only,2043,decode 2042,n/a,n/a,n/a,no,no
+18,SetOraclePriceCap,handle_set_oracle_price_cap,9612,decode 2044,2,0,"0,1",yes,yes
+19,ResolveMarket,handle_resolve_market,9706,decode 2049,5,0,"0,1,2",yes,yes
+20,WithdrawInsurance,handle_withdraw_insurance,~9900,decode 2057,6,0,"0,1,2,3,4",yes,yes
+21,AdminForceCloseAccount,handle_admin_force_close_account,~10000,decode 2058,7,0,"0,1,2,3,4,5",yes,yes
+22,SetInsuranceWithdrawPolicy,handle_set_insurance_withdraw_policy,~10100,decode 2066,2,0,"0,1",yes,yes
+23,WithdrawInsuranceLimited,handle_withdraw_insurance_limited,~10200,decode 2084,7-8,0,"0,1,2,3,4",yes,yes
+24,(gap),n/a,n/a,n/a,n/a,n/a,n/a,no,no
+25,ReclaimEmptyAccount,handle_reclaim_empty_account,~10400,decode 2088,5,0,"0,1,2",yes,yes
+26,SettleAccount,handle_settle_account,10503,decode 2092,6,0,"0,1,2",yes,yes
+27,DepositFeeCredits,handle_deposit_fee_credits,~10580,decode 2097,5,0,"0,1,2,3",yes,yes
+28,ConvertReleasedPnl,handle_convert_released_pnl,10636,decode 2103,4,0,"0,1,2",yes,yes
+29,ResolvePermissionless,handle_resolve_permissionless,~10720,decode 2109,4,0,"0,1,2",yes,yes
+30,ForceCloseResolved,handle_force_close_resolved,~10800,decode 2110,7,0,"0,1,2,3,4,5",yes,yes
+31,(gap_CatchupAccrue_v12.17_only),n/a,n/a,n/a,n/a,n/a,n/a,yes,no
+32,REJECTED_SetPythOracle,decode_wildcard,2302,n/a,n/a,n/a,n/a,no,no
+33,REJECTED_UpdateMarkPrice,decode_wildcard,2302,n/a,n/a,n/a,n/a,no,no
+34,UpdateHyperpMark,handle_update_hyperp_mark,~14300,decode 2114,4-N,1,"1",yes,yes
+35,REJECTED_TradeCpiV2,decode_wildcard,2302,n/a,n/a,n/a,n/a,no,no
+36,REJECTED_UnresolveMarket,decode_wildcard,2302,n/a,n/a,n/a,n/a,no,no
+37,CreateLpVault,handle_create_lp_vault,~10900,decode 2183,N,0,"0,1,2,3,4,5",no,yes
+38,LpVaultDeposit,handle_lp_vault_deposit,~11000,decode 2192,N,0,"0,1,2,3,4,5,6,7,8",no,yes
+39,LpVaultWithdraw,handle_lp_vault_withdraw,~11100,decode 2196,10,0,"0,1,2,3,5,6,8,9",no,yes
+40,LpVaultCrankFees,handle_lp_vault_crank_fees,~11200,decode 2200,N,0,"0,1,2,3",no,yes
+41,FundMarketInsurance,handle_fund_market_insurance,~11300,decode 2201,5,0,"0,1,2,3,4",no,yes
+42,(removed_SetInsuranceIsolation),n/a,n/a,2205,n/a,n/a,n/a,no,no
+43,ChallengeSettlement,handle_challenge_settlement,~11400,decode 2206,4,0,"0,1,2",no,yes
+44,ResolveDispute,handle_resolve_dispute,~11500,decode 2210,3,0,"0,1,2",no,yes
+45,DepositLpCollateral,handle_deposit_lp_collateral,~11600,decode 2214,N,0,"0,1,2,3,4,5,6",no,yes
+46,WithdrawLpCollateral,handle_withdraw_lp_collateral,~11700,decode 2219,N,0,"0,1,2,3,4,5,6",no,yes
+47,QueueWithdrawal,handle_queue_withdrawal,~11800,decode 2224,5,0,"0,1,2,3",no,yes
+48,ClaimQueuedWithdrawal,handle_claim_queued_withdrawal,~11900,decode 2228,10,0,"0,1,2,3,4,5,6,9",no,yes
+49,CancelQueuedWithdrawal,handle_cancel_queued_withdrawal,~12000,decode 2229,3,0,"0,1,2",no,yes
+50,ExecuteAdl,handle_execute_adl,12482,decode 2230,4,0,"0,1",no,yes
+51,CloseStaleSlabs,handle_close_stale_slabs,~12700,decode 2234,2,0,"0,1",no,yes
+52,ReclaimSlabRent,handle_reclaim_slab_rent,~12750,decode 2235,2,"0,1","0,1",no,yes
+53,AuditCrank,handle_audit_crank,~12800,decode 2236,1,n/a,"0",no,yes
+54,SetOffsetPair,handle_set_offset_pair,~12900,decode 2237,3,0,"1,2",no,yes
+55,AttestCrossMargin,handle_attest_cross_margin,~13000,decode 2241,4,n/a,"0,1",no,yes
+56,AdvanceOraclePhase,handle_advance_oracle_phase,~13100,decode 2246,1,n/a,"0",no,yes
+57,(gap_keeper_fund_removed),n/a,n/a,n/a,n/a,n/a,n/a,no,no
+58,(stub_SlashCreationDeposit),n/a,n/a,2248,n/a,n/a,n/a,no,no
+59,InitSharedVault,handle_init_shared_vault,~13200,decode 2249,3,0,"1",no,yes
+60,AllocateMarket,handle_allocate_market,~13300,decode 2254,5,0,"1,2,3",no,yes
+61,QueueWithdrawalSV,handle_queue_withdrawal_sv,~13400,decode 2258,4,0,"1,2",no,yes
+62,ClaimEpochWithdrawal,handle_claim_epoch_withdrawal,~13500,decode 2262,8,0,"0,1,2,4,5",no,yes
+63,AdvanceEpoch,handle_advance_epoch,~13600,decode 2263,2,0,"1",no,yes
+64,MintPositionNft,handle_mint_position_nft,~13700,decode 2264,11,"0,5","0,1,2,3,4",no,yes
+65,TransferPositionOwnership,handle_transfer_position_ownership,~13800,decode 2268,8,0,"0,1,2,3,4,5",no,yes
+66,BurnPositionNft,handle_burn_position_nft,~13900,decode 2272,7,0,"0,1,2,3,4",no,yes
+67,SetPendingSettlement,handle_set_pending_settlement,~14000,decode 2276,3,0,"2",no,yes
+68,ClearPendingSettlement,handle_clear_pending_settlement,~14100,decode 2280,3,0,"2",no,yes
+69,TransferOwnershipCpi,handle_transfer_ownership_cpi,~14200,decode 2284,2,0,"1",no,yes
+70,SetWalletCap,handle_set_wallet_cap,~14300,decode 2294,2,0,"1",no,yes
+71,SetOiImbalanceHardBlock,handle_set_oi_imbalance_hard_block,~14400,decode 2298,2,0,"1",no,yes
+72,RescueOrphanVault,handle_rescue_orphan_vault,~14500,decode 2148,5,0,"0,1,2,3,4",no,yes
+73,CloseOrphanSlab,handle_close_orphan_slab,~14600,decode 2149,3,0,"0,1,2",no,yes
+74,SetDexPool,handle_set_dex_pool,~14700,decode 2150,2,0,"1",no,yes
+75,InitMatcherCtx,handle_init_matcher_ctx,~14800,decode 2155,5,0,"2",no,yes
+76,PauseMarket,handle_pause_market,~14900,decode 2115,2,0,"1",no,yes
+77,UnpauseMarket,handle_unpause_market,~15000,decode 2116,2,0,"1",no,yes
+78,SetMaxPnlCap,handle_set_max_pnl_cap,~15100,decode 2117,2,0,"1",no,yes
+79,SetOiCapMultiplier,handle_set_oi_cap_multiplier,~15200,decode 2122,2,0,"1",no,yes
+80,SetDisputeParams,handle_set_dispute_params,~15300,decode 2127,2,0,"1",no,yes
+81,SetLpCollateralParams,handle_set_lp_collateral_params,~15400,decode 2133,2,0,"1",no,yes
+82,AcceptAdmin,handle_accept_admin,9381,decode 2139,2,0,"0,1",yes,yes
+83,UpdateAuthority,handle_update_authority,6876,decode 2140,3,"0,1","0,2",yes,yes

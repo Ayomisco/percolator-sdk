@@ -7,6 +7,46 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.0.0-beta.39-presync] — 2026-04-27
+
+v12.19 forward-port + v12.20 prep. Cut on `sync/v12.19-sdk` branch
+because PR #88 (engine) and PR #271 (wrapper) are still OPEN MERGEABLE
+at the time of cut. NPM publish is blocked until both PRs merge.
+
+### Added
+
+- `WrapperTarget` type. Encoders whose wire format diverges between
+  v12.17 and v12.19 accept `target?: 'v12.17' | 'v12.19'` defaulting
+  to `'v12.17'` for backward compatibility.
+- `encodeUpdateConfig({ target: 'v12.19', tvlInsuranceCapMult })`
+  appends `u16` field for the v12.19 35-byte payload. Wrapper
+  anchor: src/percolator.rs:2027 (decode).
+- `encodeInitMarket({ target: 'v12.19', ... })` produces the 304-byte
+  base payload (drops `maxInsuranceFloor`, `minOraclePriceCap`,
+  `minInitialDeposit`). Wrapper anchor: src/percolator.rs:1789-1893.
+- PERC-628 shared vault encoders un-throw under `target: 'v12.19'`:
+  `encodeInitSharedVault`, `encodeAllocateMarket`,
+  `encodeQueueWithdrawalSV`, `encodeClaimEpochWithdrawal`,
+  `encodeAdvanceEpoch`. Wrapper anchors: src/percolator.rs:2249-2263.
+- 17 v12.19 byte-parity tests at
+  `test/parity/v12.19-encoder-bytes.parity.test.ts`.
+
+### Changed
+
+- README documents the new wrapper-version target convention.
+
+### Deferred
+
+`audit-2026-04-27/v12.20-design-notes.md` covers three upstream wrapper
+commits (`c175ec4`, `f04720e`, `5229c1c`) deferred per the freeze
+policy. Each has a documented migration plan for the next sync session.
+
+### Coverage
+
+Tests: 809 -> 826 PASS. 31 SKIPPED unchanged.
+
+---
+
 ## [1.0.0-beta.38] — 2026-04-27
 
 Coverage and correctness audit on the v12.17.7 deployed line. Audit

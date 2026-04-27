@@ -27,6 +27,7 @@ export default defineConfig({
       "test/parity-fixtures.test.ts",
       "test/account-decode.test.ts",
       "test/parity/v12.17-encoder-bytes.parity.test.ts",
+      "test/parity/v12.19-encoder-bytes.parity.test.ts",
     ],
   },
 });

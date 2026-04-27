@@ -2,7 +2,26 @@
 
 TypeScript SDK for building clients, bots, and UIs on top of the [Percolator](https://github.com/dcccrypto/percolator) perpetual futures protocol on Solana.
 
-> **EXPERIMENTAL. NOT AUDITED.** `1.0.0-beta.38`. 809 tests passing. Do NOT use with real funds.
+> **EXPERIMENTAL. NOT AUDITED.** `1.0.0-beta.39-presync`. 826 tests passing. Do NOT use with real funds.
+
+## Supported wrapper versions
+
+| target | wrapper SHA | status |
+|:---|:---|:---|
+| `v12.17` | mainnet deployed (v12.17.7) | default for all encoders |
+| `v12.19` | PR #271 wrapper `d760fc4` | opt-in via `target: 'v12.19'` argument on divergent encoders |
+
+Encoders whose wire format changed between v12.17 and v12.19 accept an
+optional `target?: WrapperTarget` parameter. Today this affects:
+- `encodeUpdateConfig` (v12.19 adds `tvlInsuranceCapMult: u16`).
+- `encodeInitMarket` (v12.19 drops `maxInsuranceFloor`, `minOraclePriceCap`,
+  `minInitialDeposit`. 304-byte base instead of 344).
+- `encodeInitSharedVault`, `encodeAllocateMarket`, `encodeQueueWithdrawalSV`,
+  `encodeClaimEpochWithdrawal`, `encodeAdvanceEpoch` (PERC-628 shared vault,
+  v12.19-only). Throws by default to preserve v12.17 safety.
+
+Slab layout detection autodetects up to v12.17 today. v12.19 layout
+detection lands in a follow-up release once tier sizes stabilize.
 
 [![npm](https://img.shields.io/npm/v/@percolator/sdk?color=14F195)](https://www.npmjs.com/package/@percolator/sdk)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue)](LICENSE)
