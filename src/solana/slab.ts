@@ -3405,7 +3405,13 @@ export function parseAccount(data: Uint8Array, idx: number): Account {
   // V12_1: engineOff=648 + bitmapOff(rel)=368. Detect by engineOff (most reliable).
   // Account is 320 on aarch64, 280 on SBF — accountSize alone is ambiguous.
   // V12_1_EP: entry_price re-added, accountSize=288 on SBF. All offsets after entry_price shift +8.
-  const isV12_17 = layout.accountSize === V12_17_ACCOUNT_SIZE || layout.accountSize === V12_17_ACCOUNT_SIZE_SBF;
+  // V12_19 SBF Account is structurally identical to V12_17 SBF (same field offsets,
+  // same SBF alignment correction d1=8/d2=16). Only difference: 8 bytes of trailing
+  // padding (V12_17 SBF=352, V12_19 SBF=360). Routing V12_19 to the V12_17 fast path
+  // here is correct — pending_created_slot at +352 in both versions. Probe-confirmed 2026-04-28.
+  const isV12_17 = layout.accountSize === V12_17_ACCOUNT_SIZE
+                || layout.accountSize === V12_17_ACCOUNT_SIZE_SBF
+                || layout.accountSize === V12_19_ACCOUNT_SIZE_SBF;
   const isV12_15 = !isV12_17 && (layout.accountSize === V12_15_ACCOUNT_SIZE || layout.accountSize === V12_15_ACCOUNT_SIZE_SMALL);
   const isV12_1EP = !isV12_17 && !isV12_15 && layout.accountSize === V12_1_EP_SBF_ACCOUNT_SIZE && layout.engineOff === V12_1_SBF_ENGINE_OFF;
   const isV12_1 = !isV12_17 && !isV12_15 && !isV12_1EP && (layout.engineOff === V12_1_ENGINE_OFF || layout.engineOff === V12_1_SBF_ENGINE_OFF) && (layout.accountSize === V12_1_ACCOUNT_SIZE || layout.accountSize === V12_1_ACCOUNT_SIZE_SBF);

@@ -7,6 +7,75 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [2.0.4] — 2026-04-28
+
+Independent verifier audit caught a real BYTE_DRIFT_BLOCKING bug missed
+by the v2.0.3 ship: `parseAccount` and `parseAllAccounts` had no V12_19
+branch in the layout-version dispatch at `src/solana/slab.ts:3408`.
+V12_19 layouts (accountSize=360) fell through to the pre-v12.15 V_ADL
+path which uses wrong field offsets — capital read as 0 instead of the
+written value, pnl read as 2^64-1 instead of -123, kind/owner/etc all
+shifted +8 from correct positions.
+
+The verifier reproduced the bug empirically by writing known values to
+a synthetic 96760-byte slab buffer and reading back via parseAllAccounts.
+
+### Fix (one-liner)
+
+`src/solana/slab.ts:3408` — added V12_19_ACCOUNT_SIZE_SBF (360) to the
+`isV12_17` branch dispatch. v12.19 SBF Account is structurally identical
+to v12.17 SBF (same field offsets, same SBF alignment correction
+d1=8/d2=16, same struct definition). Only difference is 8 bytes of
+trailing padding (352 → 360). The v12.17 SBF fast path applies the
+correct field offsets for v12.19 too; just needed routing to it.
+
+```diff
+- const isV12_17 = layout.accountSize === V12_17_ACCOUNT_SIZE
+-               || layout.accountSize === V12_17_ACCOUNT_SIZE_SBF;
++ const isV12_17 = layout.accountSize === V12_17_ACCOUNT_SIZE
++               || layout.accountSize === V12_17_ACCOUNT_SIZE_SBF
++               || layout.accountSize === V12_19_ACCOUNT_SIZE_SBF;
+```
+
+### Verifier-confirmed status post-fix
+
+Every read path probe-verified for v12.19:
+- detectSlabLayout: V12_19 size detection (96760 small) ✓
+- parseHeader: layout.headerLen=136 ✓
+- parseConfig: routes V12_19 to parseConfigV12_19 ✓
+- parseEngine: V12_19 offsets via accountSize=360 ✓ (verifier ran 18/18 fields round-trip)
+- parseAllAccounts: layout.accountsOff dynamic per tier ✓
+- parseAccount: V12_19 routes to V12_17 SBF fast path ✓ (this release)
+
+### Verifier-confirmed independent re-derivation
+
+The independent verifier ran `cargo build-sbf --features small` with
+their own deliberately-wrong const assertions on `src/percolator.rs`,
+captured 38 small-tier SBF layout constants from compile errors, and
+matched them against `slab.ts`. All 38 match exactly. The probe
+methodology and offset values shipped in v2.0.2/v2.0.3 reproduce
+independently.
+
+### Other verifier observations (non-blocking)
+
+- v2.0.3 git tag is at `sync/v12.19-sdk` HEAD; the LOCAL `main` branch
+  is at v1.0.0-beta.38 (origin/main was correctly fast-forwarded via
+  `git push origin sync/v12.19-sdk:main`, but the local checkout never
+  did `git checkout main && git pull`). v2.0.4 will fast-forward local
+  main as part of this release.
+
+### Gates
+
+- pnpm test 792 PASS / 31 SKIPPED.
+- pnpm lint clean.
+- pnpm build clean.
+
+### Deprecations
+
+v2.0.3 deprecated. v2.0.0/2.0.1/2.0.2 already deprecated.
+
+---
+
 ## [2.0.3] — 2026-04-28
 
 Closes the parseConfig + parseAccount V12_19 routing gaps left in v2.0.2.
