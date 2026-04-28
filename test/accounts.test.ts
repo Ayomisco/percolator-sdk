@@ -590,20 +590,19 @@ describe("Pre-audit account count fixes", () => {
 // the fixture generation pipeline is set up.
 // ============================================================================
 
-describe("Layout verify: v12.17 configLen matches MarketConfig SBF size", () => {
-  it("detectSlabLayout on a v12.17 tier returns configLen === 512", () => {
-    // Use the small v12.17 tier (256 accounts) to get a layout without
-    // allocating a full buffer — we only need the configLen field.
+describe("Layout verify: v12.19 configLen matches MarketConfig SBF size", () => {
+  it("detectSlabLayout on the deployed-mainnet small tier returns configLen === 528", () => {
+    // V12_17 SBF small (94168 bytes) collides with V12_19 small. Mainnet program
+    // ESa89R5... was upgraded to v12.19 --features small on 2026-04-28, so any
+    // 94168-byte slab on mainnet is now V12_19 (configLen=528). detectSlabLayout
+    // priority reflects this: V12_19 first, V12_17 fallback.
     const tier = SLAB_TIERS_V12_17["small"];
     expect(tier).toBeDefined();
     const layout = detectSlabLayout(tier.dataSize);
     expect(layout).not.toBeNull();
-    // 512 = SBF-aligned MarketConfig size after Phase A/B/E.
-    // Verified field-by-field against percolator-prog/src/percolator.rs MarketConfig.
-    // Missing 80 bytes from prior value 432: max_pnl_cap, last_audit_pause_slot,
-    // oi_cap_multiplier_bps, dispute_window_slots, dispute_bond_amount,
-    // lp_collateral_enabled, lp_collateral_ltv_bps, _new_fields_pad, pending_admin.
-    expect(layout!.configLen).toBe(512);
+    // 528 = SBF-aligned MarketConfig in v12.19 (V12_17 512 + 16 added in v12.18).
+    expect(layout!.configLen).toBe(528);
+    expect(layout!.engineOff).toBe(600);
   });
 
   // v12.17 dropped the engine.mark_price field — trades used to let the indexer

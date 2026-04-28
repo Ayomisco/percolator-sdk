@@ -895,6 +895,47 @@ for (const n of V12_17_TIERS) {
   V12_17_SIZES.set(sbfSize, n);
 }
 
+// ---- V12_19 layout constants (CONFIG_LEN +16 = 528, ENGINE_OFFSET = 600) ----
+// Verified against /Users/khubair/perc-sync/work/percolator-prog tests/common/mod.rs:60-61
+// (`pub const ENGINE_OFFSET: usize = 600`) and tests/test_conservation.rs:769
+// (engine.vault U128 at slab+616 = ENGINE_OFFSET+16).
+//
+// Engine struct internal layout is unchanged from V12_17 SBF — only the
+// header+config size grew by 16 bytes (MarketConfig added pending_admin_aux
+// and small alignment padding fields). Account size, bitmap offset, and
+// generation table layout inherit from V12_17 SBF exactly.
+const V12_19_CONFIG_LEN     = 528;  // V12_17 512 + 16
+const V12_19_ENGINE_OFF_SBF = 600;  // align_up(72 + 528, 8) = 600
+
+// V12_19 SLAB_LEN values verified against
+// /Users/khubair/perc-sync/work/percolator-prog/tests/cu_benchmark.rs:49-64
+// (each value is gated on a separate feature flag — micro/small/medium/large).
+// The 256-tier value 94168 collides with V12_17 SBF small. The deployed
+// program post-2026-04-28 upgrade only produces v12.19 slabs, so detect order
+// (V12_19 first) handles disambiguation in practice.
+const V12_19_SIZES = new Map<number, number>([
+  [19640, 64],     // --features micro
+  [94168, 256],    // --features small (deployed mainnet ESa89R5...)
+  [372280, 1024],  // --features medium
+  [1484728, 4096], // default features (large)
+]);
+
+/**
+ * V12_19 slab layout. Engine struct internals are identical to V12_17 SBF.
+ * Only header+config grew by 16 bytes (CONFIG_LEN 512 -> 528), shifting
+ * engineOff from 584 to 600 and accountsOff by the same 16. Everything
+ * else inherits from buildLayoutV12_17 SBF mode.
+ */
+function buildLayoutV12_19(maxAccounts: number, dataLen: number): SlabLayout {
+  const base = buildLayoutV12_17(maxAccounts, dataLen);
+  return {
+    ...base,
+    configLen: V12_19_CONFIG_LEN,
+    engineOff: V12_19_ENGINE_OFF_SBF,
+    accountsOff: V12_19_ENGINE_OFF_SBF + (base.accountsOff - base.engineOff),
+  };
+}
+
 // SBF-specific V12_1 sizes (verified via cargo build-sbf compile-time offset_of! assertions).
 // SBF has ENGINE_OFF=616 (not 648) because HEADER=72 + CONFIG=544 = 616, align_up(616,8)=616.
 // Account=280 bytes on SBF (vs 320 on aarch64) due to u128 align=8 vs 16.
@@ -1839,16 +1880,15 @@ function buildLayoutV12_17(maxAccounts: number, dataLen: number): SlabLayout {
  * @param data    - Optional raw slab data for version-field disambiguation
  */
 export function detectSlabLayout(dataLen: number, data?: Uint8Array): SlabLayout | null {
-  // V12_19 LAYOUT NOTE (PR #271 wrapper d760fc4, ENGINE_OFF=600, +16 vs V12_17):
-  // V12_19 tier sizes (19_640 / 94_168 / 372_280 / 1_484_728) collide with
-  // V12_17 SBF tier sizes. Size-only detection cannot distinguish the two.
-  // The wrapper at d760fc4 is not deployed to mainnet yet, so this collision
-  // is theoretical pre-deploy. When v12.19 ships to ESa89R5..., add a
-  // version-field disambiguator here using the `data` parameter, plus a full
-  // buildLayoutV12_19 with engine field offsets verified against engine c32bc0b.
-  // Tracked as a known residual in audit-2026-04-28-v12.19/FINAL.md.
+  // Check V12_19 sizes first. Mainnet program ESa89R5... was upgraded to
+  // v12.19 (--features small) on 2026-04-28; any slab created post-upgrade
+  // is v12.19. Some sizes (94168) collide with V12_17 SBF small; the
+  // deployed program only emits v12.19 going forward, so this priority
+  // is correct for live mainnet reads.
+  const v1219n = V12_19_SIZES.get(dataLen);
+  if (v1219n !== undefined) return buildLayoutV12_19(v1219n, dataLen);
 
-  // Check V12_17 sizes first (two-bucket warmup, per-side funding).
+  // Check V12_17 sizes (two-bucket warmup, per-side funding).
   // Unique account sizes (368 native / 352 SBF) + RISK_BUF — no collision with V12_15 (4400-byte accounts).
   const v1217n = V12_17_SIZES.get(dataLen);
   if (v1217n !== undefined) return buildLayoutV12_17(v1217n, dataLen);
@@ -2851,8 +2891,10 @@ export function parseEngine(data: Uint8Array): EngineState {
   const isV12_15 = !isV12_17 && (layout.accountSize === V12_15_ACCOUNT_SIZE || layout.accountSize === V12_15_ACCOUNT_SIZE_SMALL) && (layout.engineOff === V12_15_ENGINE_OFF || layout.engineOff === V12_15_ENGINE_OFF_SBF);
 
   // V12_17: completely new engine layout — per-side funding, no stored funding_rate_e9.
+  // V12_19 uses the same engine struct as V12_17 SBF, just with engineOff
+  // shifted +16 (configLen 528 vs 512). Treat both 584 and 600 as SBF.
   if (isV12_17) {
-    const isSbf = layout.engineOff === V12_17_ENGINE_OFF_SBF;
+    const isSbf = layout.engineOff === V12_17_ENGINE_OFF_SBF || layout.engineOff === V12_19_ENGINE_OFF_SBF;
 
     const currentSlotOff = isSbf ? V12_17_SBF_ENGINE_CURRENT_SLOT_OFF : V12_17_ENGINE_CURRENT_SLOT_OFF;
     const marketModeOff = isSbf ? V12_17_SBF_ENGINE_MARKET_MODE_OFF : V12_17_ENGINE_MARKET_MODE_OFF;

@@ -1,0 +1,115 @@
+symbol,kind,sdk_file_line,expected_wrapper_anchor
+IX_TAG,enum,src/abi/instructions.ts:17,wrapper src/percolator.rs:1467 (enum) + 1784 (decode)
+encodeInitMarket,encoder,src/abi/instructions.ts:393,wrapper decode tag 0 (line 1789)
+encodeInitUser,encoder,src/abi/instructions.ts:480,wrapper decode tag 1 (line 1894)
+encodeInitLP,encoder,src/abi/instructions.ts:493,wrapper decode tag 2 (line 1899)
+encodeDepositCollateral,encoder,src/abi/instructions.ts:510,wrapper decode tag 3 (line 1910)
+encodeWithdrawCollateral,encoder,src/abi/instructions.ts:526,wrapper decode tag 4 (line 1916)
+encodeKeeperCrank,encoder,src/abi/instructions.ts:567,wrapper decode tag 5 (line 1922)
+encodeTradeNoCpi,encoder,src/abi/instructions.ts:594,wrapper decode tag 6 (line 1968)
+encodeLiquidateAtOracle,encoder,src/abi/instructions.ts:610,wrapper decode tag 7 (line 1979)
+encodeCloseAccount,encoder,src/abi/instructions.ts:624,wrapper decode tag 8 (line 1984)
+encodeTopUpInsurance,encoder,src/abi/instructions.ts:635,wrapper decode tag 9 (line 1989)
+encodeTradeCpi,encoder,src/abi/instructions.ts:655,wrapper decode tag 10 (line 1994)
+encodeUpdateAdmin,encoder,src/abi/instructions.ts:713,wrapper decode tag 12 (line 2018)
+encodeCloseSlab,encoder,src/abi/instructions.ts:720,wrapper decode tag 13 (line 2023)
+encodeUpdateConfig,encoder,src/abi/instructions.ts:762,wrapper decode tag 14 (line 2027)
+encodeSetOraclePriceCap,encoder,src/abi/instructions.ts:807,wrapper decode tag 18 (line 2044)
+encodeResolveMarket,encoder,src/abi/instructions.ts:819,wrapper decode tag 19 (line 2049)
+encodeWithdrawInsurance,encoder,src/abi/instructions.ts:827,wrapper decode tag 20 (line 2057)
+encodeAdminForceClose,encoder,src/abi/instructions.ts:839,wrapper decode tag 21 (line 2058)
+encodeSetInsuranceWithdrawPolicy,encoder,src/abi/instructions.ts:1891,wrapper decode tag 22 (line 2066)
+encodeWithdrawInsuranceLimited,encoder,src/abi/instructions.ts:1901,wrapper decode tag 23 (line 2084)
+encodeReclaimEmptyAccount,encoder,src/abi/instructions.ts after AcceptAdmin region,wrapper decode tag 25 (line 2088)
+encodeSettleAccount,encoder,src/abi/instructions.ts after AcceptAdmin region,wrapper decode tag 26 (line 2092)
+encodeDepositFeeCredits,encoder,src/abi/instructions.ts after AcceptAdmin region,wrapper decode tag 27 (line 2097)
+encodeConvertReleasedPnl,encoder,src/abi/instructions.ts after AcceptAdmin region,wrapper decode tag 28 (line 2103)
+encodeResolvePermissionless,encoder,src/abi/instructions.ts:1906,wrapper decode tag 29 (line 2109)
+encodeForceCloseResolved,encoder,src/abi/instructions.ts:1911,wrapper decode tag 30 (line 2110)
+encodeUpdateHyperpMark,encoder,src/abi/instructions.ts:1075,wrapper decode tag 34 (line 2114)
+encodeCreateLpVault,encoder,src/abi/instructions.ts:1916,wrapper decode tag 37 (line 2183)
+encodeLpVaultDeposit,encoder,src/abi/instructions.ts:1925,wrapper decode tag 38 (line 2192)
+encodeLpVaultWithdraw,encoder,src/abi/instructions.ts:939,wrapper decode tag 39 (line 2196)
+encodeLpVaultCrankFees,encoder,src/abi/instructions.ts:1930,wrapper decode tag 40 (line 2200)
+encodeFundMarketInsurance,encoder,src/abi/instructions.ts:1087,wrapper decode tag 41 (line 2201)
+encodeChallengeSettlement,encoder,src/abi/instructions.ts:1935,wrapper decode tag 43 (line 2206)
+encodeResolveDispute,encoder,src/abi/instructions.ts:1940,wrapper decode tag 44 (line 2210)
+encodeDepositLpCollateral,encoder,src/abi/instructions.ts:1945,wrapper decode tag 45 (line 2214)
+encodeWithdrawLpCollateral,encoder,src/abi/instructions.ts:1950,wrapper decode tag 46 (line 2219)
+encodeQueueWithdrawal,encoder,src/abi/instructions.ts:1129,wrapper decode tag 47 (line 2224)
+encodeClaimQueuedWithdrawal,encoder,src/abi/instructions.ts:1143,wrapper decode tag 48 (line 2228)
+encodeCancelQueuedWithdrawal,encoder,src/abi/instructions.ts:1156,wrapper decode tag 49 (line 2229)
+encodeExecuteAdl,encoder,src/abi/instructions.ts:1186,wrapper decode tag 50 (line 2230)
+encodeCloseStaleSlabs,encoder,src/abi/instructions.ts:1203,wrapper decode tag 51 (line 2234)
+encodeReclaimSlabRent,encoder,src/abi/instructions.ts:1216,wrapper decode tag 52 (line 2235)
+encodeAuditCrank,encoder,src/abi/instructions.ts:1238,wrapper decode tag 53 (line 2236)
+encodeSetOffsetPair,encoder,src/abi/instructions.ts:1955,wrapper decode tag 54 (line 2237)
+encodeAttestCrossMargin,encoder,src/abi/instructions.ts:1960,wrapper decode tag 55 (line 2241)
+encodeAdvanceOraclePhase,encoder,src/abi/instructions.ts:1338,wrapper decode tag 56 (line 2246)
+encodeInitSharedVault,encoder,src/abi/instructions.ts:1444,wrapper decode tag 59 (line 2249)
+encodeAllocateMarket,encoder,src/abi/instructions.ts:1477,wrapper decode tag 60 (line 2254)
+encodeQueueWithdrawalSV,encoder,src/abi/instructions.ts:1505,wrapper decode tag 61 (line 2258)
+encodeClaimEpochWithdrawal,encoder,src/abi/instructions.ts:1536,wrapper decode tag 62 (line 2262)
+encodeAdvanceEpoch,encoder,src/abi/instructions.ts:1561,wrapper decode tag 63 (line 2263)
+encodeMintPositionNft,encoder,src/abi/instructions.ts:1641,wrapper decode tag 64 (line 2264)
+encodeTransferPositionOwnership,encoder,src/abi/instructions.ts:1667,wrapper decode tag 65 (line 2268)
+encodeBurnPositionNft,encoder,src/abi/instructions.ts:1692,wrapper decode tag 66 (line 2272)
+encodeSetPendingSettlement,encoder,src/abi/instructions.ts:1714,wrapper decode tag 67 (line 2276)
+encodeClearPendingSettlement,encoder,src/abi/instructions.ts:1735,wrapper decode tag 68 (line 2280)
+encodeTransferOwnershipCpi,encoder,src/abi/instructions.ts:1758,wrapper decode tag 69 (line 2284)
+encodeSetWalletCap,encoder,src/abi/instructions.ts:1811,wrapper decode tag 70 (line 2294)
+encodeSetOiImbalanceHardBlock,encoder,src/abi/instructions.ts:1601,wrapper decode tag 71 (line 2298)
+encodeRescueOrphanVault,encoder,src/abi/instructions.ts:1965,wrapper decode tag 72 (line 2148)
+encodeCloseOrphanSlab,encoder,src/abi/instructions.ts:1970,wrapper decode tag 73 (line 2149)
+encodeSetDexPool,encoder,src/abi/instructions.ts after CloseOrphanSlab,wrapper decode tag 74 (line 2150)
+encodeInitMatcherCtx,encoder,src/abi/instructions.ts:1863,wrapper decode tag 75 (line 2155)
+encodePauseMarket,encoder,src/abi/instructions.ts:947,wrapper decode tag 76 (line 2115)
+encodeUnpauseMarket,encoder,src/abi/instructions.ts:955,wrapper decode tag 77 (line 2116)
+encodeSetMaxPnlCap,encoder,src/abi/instructions.ts after AcceptAdmin region,wrapper decode tag 78 (line 2117)
+encodeSetOiCapMultiplier,encoder,src/abi/instructions.ts after AcceptAdmin region,wrapper decode tag 79 (line 2122)
+encodeSetDisputeParams,encoder,src/abi/instructions.ts after AcceptAdmin region,wrapper decode tag 80 (line 2127)
+encodeSetLpCollateralParams,encoder,src/abi/instructions.ts after AcceptAdmin region,wrapper decode tag 81 (line 2133)
+encodeAcceptAdmin,encoder,src/abi/instructions.ts:2015,wrapper decode tag 82 (line 2139)
+encodeUpdateAuthority,encoder,src/abi/instructions.ts after encodeAcceptAdmin,wrapper decode tag 83 (line 2140)
+ACCOUNTS_INIT_MARKET to ACCOUNTS_*,account specs (73 total),src/abi/accounts.ts grep ^export const ACCOUNTS_,wrapper handle_* expect_len + expect_signer + expect_writable
+parseHeader,parser,src/solana/slab.ts:2316,wrapper state::read_header
+parseConfig,parser,src/solana/slab.ts:2485,wrapper state::read_config
+parseParams,parser,src/solana/slab.ts:2720,wrapper state::params
+parseEngine,parser,src/solana/slab.ts:2832,wrapper engine struct
+parseUsedIndices,parser,src/solana/slab.ts:3040,wrapper bitmap layout
+parseAccount,parser,src/solana/slab.ts:3090,wrapper Account struct
+parseAllAccounts,parser,src/solana/slab.ts:3275,wrapper accounts iter
+parseErrorFromLogs,parser,src/abi/errors.ts:309,wrapper PercolatorError enum
+parsePositionNftAccount,parser,src/abi/nft.ts:264,wrapper PositionNft account layout
+parseAdlEvent,parser,src/solana/adl.ts:435,wrapper ADL event log format
+deriveVaultAuthority,pda,src/solana/pda.ts:9,wrapper vault PDA seeds
+deriveInsuranceLpMint,pda,src/solana/pda.ts:23,wrapper insurance LP mint seeds
+deriveLpPda,pda,src/solana/pda.ts:39,wrapper LP PDA seeds
+deriveCreatorLockPda,pda,src/solana/pda.ts:118,wrapper creator lock PDA seeds
+derivePythPushOraclePDA,pda,src/solana/pda.ts:145,Pyth Receiver shard+feed PDA
+deriveNftPda,pda,src/abi/nft.ts:148,wrapper NFT position PDA seeds
+deriveNftMint,pda,src/abi/nft.ts:163,wrapper NFT mint PDA seeds
+deriveMintAuthority,pda,src/abi/nft.ts:178,wrapper NFT mint authority seeds
+encodeNftMint,encoder (NFT),src/abi/nft.ts:55,wrapper percolator-nft program
+encodeNftBurn,encoder (NFT),src/abi/nft.ts:64,wrapper percolator-nft program
+encodeNftSettleFunding,encoder (NFT),src/abi/nft.ts:69,wrapper percolator-nft program
+encodeNftEmergencyBurn,encoder (NFT),src/abi/nft.ts:74,wrapper percolator-nft program
+SLAB_LEN constants,layout const,src/solana/slab.ts grep SLAB_LEN,wrapper SLAB_LEN constants
+ENGINE_OFF / ENGINE_OFF_SBF,layout const,src/solana/slab.ts grep ENGINE_OFF,wrapper engine offset
+PercolatorError code map,error map,src/abi/errors.ts,wrapper PercolatorError enum
+AUTHORITY_KIND const map,const,src/abi/instructions.ts after encodeAcceptAdmin,wrapper AUTHORITY_ADMIN/HYPERP_MARK/INSURANCE/INSURANCE_OPERATOR
+WrapperTarget,type alias,src/abi/instructions.ts after encodeAcceptAdmin,wrapper version naming
+LiquidationPolicyTag,const,src/abi/instructions.ts:542,wrapper LiquidationPolicy enum
+PYTH_RECEIVER_PROGRAM_ID,const,src/abi/instructions.ts:986,Pyth Pull receiver program ID
+MARK_PRICE_EMA constants,const,src/abi/instructions.ts:1020,wrapper MARK_PRICE_EMA constants
+ORACLE_PHASE_* constants,const,src/abi/instructions.ts:1343,wrapper oracle phase constants
+PHASE1/PHASE2 thresholds,const,src/abi/instructions.ts:1349,wrapper phase transition thresholds
+RENOUNCE_ADMIN_CONFIRMATION,const,src/abi/instructions.ts:870,wrapper RENOUNCE confirmation
+UNRESOLVE_CONFIRMATION,const,src/abi/instructions.ts:875,wrapper UnresolveMarket confirmation
+MATCHER_MAGIC,const,src/abi/instructions.ts:1259,matcher MATCHER_MAGIC
+MATCHER_CONTEXT_LEN,const,src/abi/instructions.ts:1272,matcher context length
+MATCHER_RETURN_LEN,const,src/abi/instructions.ts:1266,matcher return section length
+MATCHER_CALL_LEN,const,src/abi/instructions.ts:1274,matcher call payload length
+INIT_CTX_LEN,const,src/abi/instructions.ts:1282,matcher init context payload length
+POSITION_NFT_STATE_LEN,const,src/abi/nft.ts grep,wrapper PositionNft state len
+PROGRAM_IDs,const,src/config/program-ids.ts,wrapper declare_id! anchors

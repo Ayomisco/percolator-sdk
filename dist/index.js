@@ -2308,6 +2308,27 @@ for (const n of V12_17_TIERS) {
   const sbfSize = V12_17_ENGINE_OFF_SBF + accountsOffSbf + n * V12_17_ACCOUNT_SIZE_SBF + V12_17_RISK_BUF_LEN + n * V12_17_GEN_TABLE_ENTRY;
   V12_17_SIZES.set(sbfSize, n);
 }
+var V12_19_CONFIG_LEN = 528;
+var V12_19_ENGINE_OFF_SBF = 600;
+var V12_19_SIZES = /* @__PURE__ */ new Map([
+  [19640, 64],
+  // --features micro
+  [94168, 256],
+  // --features small (deployed mainnet ESa89R5...)
+  [372280, 1024],
+  // --features medium
+  [1484728, 4096]
+  // default features (large)
+]);
+function buildLayoutV12_19(maxAccounts, dataLen) {
+  const base = buildLayoutV12_17(maxAccounts, dataLen);
+  return {
+    ...base,
+    configLen: V12_19_CONFIG_LEN,
+    engineOff: V12_19_ENGINE_OFF_SBF,
+    accountsOff: V12_19_ENGINE_OFF_SBF + (base.accountsOff - base.engineOff)
+  };
+}
 var V12_1_SBF_ACCOUNT_SIZE = 280;
 var V12_1_SBF_ENGINE_OFF = 616;
 var V12_1_SBF_BITMAP_OFF = 584;
@@ -3190,6 +3211,8 @@ function buildLayoutV12_17(maxAccounts, dataLen) {
   };
 }
 function detectSlabLayout(dataLen, data) {
+  const v1219n = V12_19_SIZES.get(dataLen);
+  if (v1219n !== void 0) return buildLayoutV12_19(v1219n, dataLen);
   const v1217n = V12_17_SIZES.get(dataLen);
   if (v1217n !== void 0) return buildLayoutV12_17(v1217n, dataLen);
   const v1215n = V12_15_SIZES.get(dataLen);
@@ -3652,7 +3675,7 @@ function parseEngine(data) {
   const isV12_17 = layout.accountSize === V12_17_ACCOUNT_SIZE || layout.accountSize === V12_17_ACCOUNT_SIZE_SBF;
   const isV12_15 = !isV12_17 && (layout.accountSize === V12_15_ACCOUNT_SIZE || layout.accountSize === V12_15_ACCOUNT_SIZE_SMALL) && (layout.engineOff === V12_15_ENGINE_OFF || layout.engineOff === V12_15_ENGINE_OFF_SBF);
   if (isV12_17) {
-    const isSbf = layout.engineOff === V12_17_ENGINE_OFF_SBF;
+    const isSbf = layout.engineOff === V12_17_ENGINE_OFF_SBF || layout.engineOff === V12_19_ENGINE_OFF_SBF;
     const currentSlotOff = isSbf ? V12_17_SBF_ENGINE_CURRENT_SLOT_OFF : V12_17_ENGINE_CURRENT_SLOT_OFF;
     const marketModeOff = isSbf ? V12_17_SBF_ENGINE_MARKET_MODE_OFF : V12_17_ENGINE_MARKET_MODE_OFF;
     const cTotOff = isSbf ? V12_17_SBF_ENGINE_C_TOT_OFF : V12_17_ENGINE_C_TOT_OFF;

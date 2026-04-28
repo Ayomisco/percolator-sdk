@@ -7,6 +7,37 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [2.0.0] — 2026-04-28
+
+Stable release. Cut after the v12.19 mainnet upgrade landed at slot
+416196178 (tx `n6UunJ6a7xB3hCd54CMxPszHgkHKoHyaSUdEyTq8rGEz9tmoycBGsrFRVXt3Wkg6fm1ASRaH1p9SR6wEL5o9DBn`)
+and post-merge verification confirmed GO.
+
+### Added
+
+- `buildLayoutV12_19` in `src/solana/slab.ts`. Inherits engine internals
+  from V12_17 SBF; differs only in `engineOff` (600 vs 584) and
+  `configLen` (528 vs 512). Tier sizes match the wrapper's compile-time
+  constants in `tests/cu_benchmark.rs:49-64`:
+  - `--features micro`: 19_640 bytes (64 accounts).
+  - `--features small`: 94_168 bytes (256 accounts) — currently deployed
+    to mainnet program `ESa89R5Es3rJ5mnwGybVRG1GrNt9etP11Z5V2QWD4edv`.
+  - `--features medium`: 372_280 bytes (1024 accounts).
+  - default: 1_484_728 bytes (4096 accounts).
+- `detectSlabLayout` checks V12_19 sizes before V12_17 SBF. The
+  collision (94168 in both) resolves to V12_19 in practice because the
+  deployed program produces v12.19 slabs only.
+- `parseEngine` recognises `engineOff === 600` as V12_19 SBF (same
+  internals as V12_17 SBF).
+
+### Mainnet state at release
+
+- program `ESa89R5...` upgraded to v12.19 `--features small`.
+- last deployed slot 416196178.
+- new binary 626,136 bytes (sha256 `205c0e77865612bd3a529bd851a956acb712543faede318a79c2765ebaa032ea`).
+
+---
+
 ## [2.0.0-rc.1] — 2026-04-28
 
 Single-target SDK aligned to wrapper v12.19 (PR #271, branch

@@ -660,31 +660,35 @@ console.log("\n✅ All slab tests passed!");
 //   last_crank_slot:344 gc_cursor:400 oi_eff_long_q:528 oi_eff_short_q:544
 // SBF offsets triangulated from known-good SBF anchors (c_tot=336, neg_pnl=616, f_long=648).
 {
-  console.log("\nTesting V12_17 engine field offsets...");
+  console.log("\nTesting V12_19 engine field offsets (94168-byte slabs from deployed mainnet ESa89R5...)...");
 
-  // SBF small tier: n=256
-  // size = 584 + ceil((712+32+4+512)/8)*8 + 256*352 + 160 + 256*8 = 94168
-  const V12_17_SBF_SMALL_SIZE = 94_168;
-  const layoutSbf = detectSlabLayout(V12_17_SBF_SMALL_SIZE);
-  assert(layoutSbf !== null, `detectSlabLayout(${V12_17_SBF_SMALL_SIZE}) must return non-null`);
-  assert(layoutSbf!.engineOff === 584, `V12_17 SBF engineOff should be 584, got ${layoutSbf!.engineOff}`);
-  assert(layoutSbf!.accountSize === 352, `V12_17 SBF accountSize should be 352, got ${layoutSbf!.accountSize}`);
+  // Post-2026-04-28 deploy of v12.19 --features small to ESa89R5...
+  // 94168-byte slabs are now V12_19 (engineOff=600), not V12_17 (engineOff=584).
+  // V12_19 inherits engine internals from V12_17 SBF; only engineOff and configLen
+  // differ (HEADER+CONFIG grew by 16 bytes).
+  const V12_19_SBF_SMALL_SIZE = 94_168;
+  const layoutSbf = detectSlabLayout(V12_19_SBF_SMALL_SIZE);
+  assert(layoutSbf !== null, `detectSlabLayout(${V12_19_SBF_SMALL_SIZE}) must return non-null`);
+  assert(layoutSbf!.engineOff === 600, `V12_19 SBF engineOff should be 600, got ${layoutSbf!.engineOff}`);
+  assert(layoutSbf!.configLen === 528, `V12_19 configLen should be 528, got ${layoutSbf!.configLen}`);
+  assert(layoutSbf!.accountSize === 352, `V12_19 SBF accountSize should be 352, got ${layoutSbf!.accountSize}`);
 
+  // Engine internal offsets unchanged from V12_17 SBF — they are relative to engineOff.
   assert(layoutSbf!.engineLastCrankSlotOff === 328,
-    `V12_17 SBF lastCrankSlotOff should be 328, got ${layoutSbf!.engineLastCrankSlotOff}`);
+    `V12_19 SBF lastCrankSlotOff should be 328, got ${layoutSbf!.engineLastCrankSlotOff}`);
   assert(layoutSbf!.engineGcCursorOff === 384,
-    `V12_17 SBF gcCursorOff should be 384, got ${layoutSbf!.engineGcCursorOff}`);
+    `V12_19 SBF gcCursorOff should be 384, got ${layoutSbf!.engineGcCursorOff}`);
   assert(layoutSbf!.engineLongOiOff === 504,
-    `V12_17 SBF longOiOff should be 504, got ${layoutSbf!.engineLongOiOff}`);
+    `V12_19 SBF longOiOff should be 504, got ${layoutSbf!.engineLongOiOff}`);
   assert(layoutSbf!.engineShortOiOff === 520,
-    `V12_17 SBF shortOiOff should be 520, got ${layoutSbf!.engineShortOiOff}`);
+    `V12_19 SBF shortOiOff should be 520, got ${layoutSbf!.engineShortOiOff}`);
 
-  // These fields don't exist in v12.17 — must stay -1.
-  assert(layoutSbf!.engineFundingIndexOff === -1, `V12_17 fundingIndexOff must stay -1`);
-  assert(layoutSbf!.engineMarkPriceOff === -1, `V12_17 markPriceOff must stay -1`);
-  assert(layoutSbf!.engineTotalOiOff === -1, `V12_17 totalOiOff stays -1 (computed from long+short)`);
-  assert(layoutSbf!.engineLiqCursorOff === -1, `V12_17 liqCursorOff must stay -1`);
-  console.log(`  ✓ V12_17 SBF small slab (${V12_17_SBF_SMALL_SIZE}, 256 accounts) offsets correct`);
+  // Fields that don't exist in v12.17 / v12.19 stay -1.
+  assert(layoutSbf!.engineFundingIndexOff === -1, `V12_19 fundingIndexOff must stay -1`);
+  assert(layoutSbf!.engineMarkPriceOff === -1, `V12_19 markPriceOff must stay -1`);
+  assert(layoutSbf!.engineTotalOiOff === -1, `V12_19 totalOiOff stays -1 (computed from long+short)`);
+  assert(layoutSbf!.engineLiqCursorOff === -1, `V12_19 liqCursorOff must stay -1`);
+  console.log(`  ✓ V12_19 SBF small slab (${V12_19_SBF_SMALL_SIZE}, 256 accounts) offsets correct`);
 
   // Native small tier: n=256
   // size = 592 + ceil((752+32+4+512)/16)*16 + 256*368 + 160 + 256*8 = 98320
@@ -703,10 +707,11 @@ console.log("\n✅ All slab tests passed!");
     `V12_17 native shortOiOff should be 544, got ${layoutNative!.engineShortOiOff}`);
   console.log(`  ✓ V12_17 native small slab (${V12_17_NATIVE_SMALL_SIZE}, 256 accounts) offsets correct`);
 
-  // parseEngine round-trip: write known values into SBF slab at the four offsets,
-  // assert parseEngine reads them back.
-  const buf = Buffer.alloc(V12_17_SBF_SMALL_SIZE);
-  const engineBase = 584;
+  // parseEngine round-trip: write known values into a V12_19 SBF slab at
+  // the four offsets, assert parseEngine reads them back. engineBase shifts
+  // to 600 (V12_19) since 94168-byte slabs now resolve to V12_19 layout.
+  const buf = Buffer.alloc(V12_19_SBF_SMALL_SIZE);
+  const engineBase = 600;
 
   // last_crank_slot (u64) at engineBase + 328
   buf.writeBigUInt64LE(123_456n, engineBase + 328);
