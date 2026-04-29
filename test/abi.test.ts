@@ -393,8 +393,12 @@ console.log("\nTesting instruction encoders...\n");
     minNonzeroMmReq: "1000",
     minNonzeroImReq: "2000",
   });
-  // v12.19 wrapper d760fc4: InitMarket base = 304 bytes (drops maxInsuranceFloor + minOraclePriceCap + minInitialDeposit vs v12.17's 344).
-  assert(data.length === 304, `InitMarket length: expected 304, got ${data.length}`);
+  // v12.19 wrapper d760fc4: InitMarket base = 304 bytes. As of v2.0.6,
+  // encodeInitMarket ALWAYS emits the 66-byte extended tail (304 + 66 = 370)
+  // because the deployed wrapper rejects base-only payloads via an inner
+  // read_risk_params length check (percolator.rs:2413). When the caller
+  // omits `extendedTail`, wrapper-default values are used.
+  assert(data.length === 370, `InitMarket length: expected 370 (304 base + 66 ext), got ${data.length}`);
   assert(data[0] === IX_TAG.InitMarket, "InitMarket tag byte");
   console.log("✓ encodeInitMarket");
 }

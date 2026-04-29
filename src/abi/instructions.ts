@@ -306,25 +306,35 @@ const INIT_MARKET_BASE_LEN = 304;
 const INIT_MARKET_EXTENDED_TAIL_LEN = 66;
 
 /**
- * Returns true if the ExtendedTail contains at least one non-zero field.
- * When all fields are zero the base 344-byte payload is sufficient — the
- * program treats an empty rest as all-zero defaults.
+ * Default extended-tail values matching the deployed wrapper's `unwrap_or(DEFAULT_*)`
+ * config seeds. Used when the caller omits `extendedTail`.
+ *
+ * Wrapper anchors (percolator-prog/src/percolator.rs):
+ *   DEFAULT_FUNDING_HORIZON_SLOTS = 500     (line 258)
+ *   DEFAULT_FUNDING_K_BPS = 100              (line 259)
+ *   DEFAULT_FUNDING_MAX_PREMIUM_BPS = 500    (line 260)
+ *   DEFAULT_FUNDING_MAX_E9_PER_SLOT = 1000   (line 267)
+ *   force_close_delay_slots = 1              (decoder L1837 default for empty rest)
+ *
+ * Note: the deployed v12.19 wrapper has a bug where `read_risk_params`
+ * (percolator.rs:2413) requires `input.len() >= 40` after `min_liquidation_abs`.
+ * That makes the outer decoder's "rest is empty → use defaults" branch
+ * (percolator.rs:1818-1838) dead code — the inner check fires first with
+ * InvalidInstructionData. The SDK works around this by ALWAYS emitting the
+ * 66-byte extended tail, with these wrapper-default values when the caller
+ * doesn't provide an explicit one.
  */
-function extendedTailHasNonZero(t: InitMarketExtendedTail): boolean {
-  const toBigInt = (v: bigint | string): bigint =>
-    typeof v === "string" ? BigInt(v) : v;
-  return (
-    t.insuranceWithdrawMaxBps !== 0 ||
-    toBigInt(t.insuranceWithdrawCooldownSlots) !== 0n ||
-    toBigInt(t.permissionlessResolveStaleSlots) !== 0n ||
-    toBigInt(t.fundingHorizonSlots) !== 0n ||
-    toBigInt(t.fundingKBps) !== 0n ||
-    toBigInt(t.fundingMaxPremiumBps) !== 0n ||
-    toBigInt(t.fundingMaxBpsPerSlot) !== 0n ||
-    toBigInt(t.markMinFee) !== 0n ||
-    toBigInt(t.forceCloseDelaySlots) !== 0n
-  );
-}
+const DEFAULT_EXTENDED_TAIL: InitMarketExtendedTail = {
+  insuranceWithdrawMaxBps: 0,
+  insuranceWithdrawCooldownSlots: 0n,
+  permissionlessResolveStaleSlots: 0n,
+  fundingHorizonSlots: 500n,
+  fundingKBps: 100n,
+  fundingMaxPremiumBps: 500n,
+  fundingMaxBpsPerSlot: 1000n,
+  markMinFee: 0n,
+  forceCloseDelaySlots: 1n,
+};
 
 /**
  * Encode the optional 66-byte extended tail for InitMarket (S-4).
@@ -433,20 +443,18 @@ export function encodeInitMarket(args: InitMarketArgs): Uint8Array {
     );
   }
 
-  // Append extended tail only when present and at least one field is non-zero.
-  // Omitting the tail preserves current default behavior: program reads empty
-  // rest and uses all-zero defaults (percolator.rs:1527-1529).
-  if (args.extendedTail && extendedTailHasNonZero(args.extendedTail)) {
-    const tail = encodeExtendedTail(args.extendedTail);
-    if (tail.length !== INIT_MARKET_EXTENDED_TAIL_LEN) {
-      throw new Error(
-        `encodeInitMarket: extended tail expected ${INIT_MARKET_EXTENDED_TAIL_LEN} bytes, got ${tail.length}`,
-      );
-    }
-    return concatBytes(base, tail);
+  // ALWAYS append the 66-byte extended tail. The deployed v12.19 wrapper
+  // rejects base-only payloads via an inner read_risk_params length check
+  // (percolator.rs:2413) regardless of the outer "rest is empty → defaults"
+  // logic. See DEFAULT_EXTENDED_TAIL doc comment above for full context.
+  // Caller-provided tail wins; otherwise wrapper-matching defaults are used.
+  const tail = encodeExtendedTail(args.extendedTail ?? DEFAULT_EXTENDED_TAIL);
+  if (tail.length !== INIT_MARKET_EXTENDED_TAIL_LEN) {
+    throw new Error(
+      `encodeInitMarket: extended tail expected ${INIT_MARKET_EXTENDED_TAIL_LEN} bytes, got ${tail.length}`,
+    );
   }
-
-  return base;
+  return concatBytes(base, tail);
 }
 
 /**

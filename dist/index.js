@@ -272,10 +272,17 @@ function encodeFeedId(feedId) {
 }
 var INIT_MARKET_BASE_LEN = 304;
 var INIT_MARKET_EXTENDED_TAIL_LEN = 66;
-function extendedTailHasNonZero(t) {
-  const toBigInt = (v) => typeof v === "string" ? BigInt(v) : v;
-  return t.insuranceWithdrawMaxBps !== 0 || toBigInt(t.insuranceWithdrawCooldownSlots) !== 0n || toBigInt(t.permissionlessResolveStaleSlots) !== 0n || toBigInt(t.fundingHorizonSlots) !== 0n || toBigInt(t.fundingKBps) !== 0n || toBigInt(t.fundingMaxPremiumBps) !== 0n || toBigInt(t.fundingMaxBpsPerSlot) !== 0n || toBigInt(t.markMinFee) !== 0n || toBigInt(t.forceCloseDelaySlots) !== 0n;
-}
+var DEFAULT_EXTENDED_TAIL = {
+  insuranceWithdrawMaxBps: 0,
+  insuranceWithdrawCooldownSlots: 0n,
+  permissionlessResolveStaleSlots: 0n,
+  fundingHorizonSlots: 500n,
+  fundingKBps: 100n,
+  fundingMaxPremiumBps: 500n,
+  fundingMaxBpsPerSlot: 1000n,
+  markMinFee: 0n,
+  forceCloseDelaySlots: 1n
+};
 function encodeExtendedTail(t) {
   return concatBytes(
     encU16(t.insuranceWithdrawMaxBps),
@@ -329,16 +336,13 @@ function encodeInitMarket(args) {
       `encodeInitMarket: base payload expected ${INIT_MARKET_BASE_LEN} bytes, got ${base.length}`
     );
   }
-  if (args.extendedTail && extendedTailHasNonZero(args.extendedTail)) {
-    const tail = encodeExtendedTail(args.extendedTail);
-    if (tail.length !== INIT_MARKET_EXTENDED_TAIL_LEN) {
-      throw new Error(
-        `encodeInitMarket: extended tail expected ${INIT_MARKET_EXTENDED_TAIL_LEN} bytes, got ${tail.length}`
-      );
-    }
-    return concatBytes(base, tail);
+  const tail = encodeExtendedTail(args.extendedTail ?? DEFAULT_EXTENDED_TAIL);
+  if (tail.length !== INIT_MARKET_EXTENDED_TAIL_LEN) {
+    throw new Error(
+      `encodeInitMarket: extended tail expected ${INIT_MARKET_EXTENDED_TAIL_LEN} bytes, got ${tail.length}`
+    );
   }
-  return base;
+  return concatBytes(base, tail);
 }
 function encodeInitUser(args) {
   return concatBytes(encU8(IX_TAG.InitUser), encU64(args.feePayment));

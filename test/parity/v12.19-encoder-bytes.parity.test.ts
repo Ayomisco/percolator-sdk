@@ -77,9 +77,9 @@ describe("v12.19 encoder byte parity", () => {
       minNonzeroImReq: 2000n,
     };
 
-    it("emits 304-byte v12.19 base payload", () => {
+    it("emits 370-byte v12.19 payload (304 base + 66 mandatory ext tail)", () => {
       const data = encodeInitMarket(baseArgs);
-      expect(data.length).toBe(304);
+      expect(data.length).toBe(370);
       expect(data[0]).toBe(IX_TAG.InitMarket);
     });
 
@@ -91,8 +91,8 @@ describe("v12.19 encoder byte parity", () => {
         minOraclePriceCap: 88888n,
         minInitialDeposit: 77777n,
       });
-      expect(without.length).toBe(304);
-      expect(withDeprecated.length).toBe(304);
+      expect(without.length).toBe(370);
+      expect(withDeprecated.length).toBe(370);
       expect(Buffer.from(without).equals(Buffer.from(withDeprecated))).toBe(true);
     });
   });

@@ -700,8 +700,9 @@ describe("encoding roundtrip — manual decode verifies no endianness or off-by-
       minNonzeroMmReq: MM_REQ.toString(),
       minNonzeroImReq: IM_REQ.toString(),
     });
-    // v12.19: 304-byte base, minInitialDeposit dropped. Tail = minNonzeroMmReq(16) + minNonzeroImReq(16) at offsets 272, 288.
-    expect(data.length).toBe(304);
+    // v12.19: 304-byte base + 66-byte mandatory ext tail = 370.
+    // minNonzeroMmReq(16) + minNonzeroImReq(16) at offsets 272, 288 (within base).
+    expect(data.length).toBe(370);
     expect(readU128LE(data, 272)).toBe(MM_REQ);
     expect(readU128LE(data, 288)).toBe(IM_REQ);
   });

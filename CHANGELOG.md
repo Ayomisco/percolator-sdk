@@ -7,6 +7,54 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [2.0.6] — 2026-04-29
+
+`encodeInitMarket` always-ext-tail fix. End-to-end InitMarket simulation against the
+deployed mainnet program (ESa89R5..., v12.19 `--features small`) on 2026-04-29
+showed every base-only payload (304 bytes) is rejected at the wrapper with
+`InvalidInstructionData`. Root cause is a wrapper-side bug in the deployed binary:
+
+`read_risk_params` (percolator-prog/src/percolator.rs:2413) requires
+`input.len() >= 40` after consuming `min_liquidation_abs`. For a base-only
+304-byte payload, only 32 bytes remain (the two trailing u128s). The check fires
+**before** the outer decoder's "rest is empty → use defaults" branch
+(percolator.rs:1818-1838) is reached, making that branch dead code.
+
+Since the wrapper is deployed and immutable until next upgrade, the fix is
+client-side: the SDK now ALWAYS emits the 66-byte extended tail.
+
+### Changed
+
+- **Breaking-ish (wire format)**: `encodeInitMarket` now always returns a
+  370-byte payload (304 base + 66 extended tail), regardless of whether the
+  caller provides `extendedTail`. Pre-2.0.6 callers shipping the 304-byte
+  base-only payload were silently broken against deployed mainnet — they would
+  have hit `InvalidInstructionData` at `handle_init_market`.
+- When `extendedTail` is omitted, the SDK fills with values mirroring the
+  wrapper's `unwrap_or(DEFAULT_*)` config seeds, so the resulting market
+  config is identical to what the (now-dead) wrapper "empty rest → defaults"
+  path would have produced:
+    - `fundingHorizonSlots: 500`  (`DEFAULT_FUNDING_HORIZON_SLOTS`)
+    - `fundingKBps: 100`           (`DEFAULT_FUNDING_K_BPS`)
+    - `fundingMaxPremiumBps: 500`  (`DEFAULT_FUNDING_MAX_PREMIUM_BPS`)
+    - `fundingMaxBpsPerSlot: 1000` (`DEFAULT_FUNDING_MAX_E9_PER_SLOT`)
+    - `forceCloseDelaySlots: 1`    (decoder L1837 default for empty rest)
+    - all other tail fields: 0
+
+### Caller impact
+
+- Anyone who was relying on 304-byte payloads working: they were broken on
+  mainnet. They will now produce 370-byte payloads that succeed.
+- Anyone passing an explicit `extendedTail`: behavior unchanged.
+
+### Verified
+
+End-to-end mainnet simulation (`scripts/init-sim-hyperp-v2.mjs`) of hyperp
+InitMarket succeeds at 924k CU with the new default tail. Real-launch tx
+should set CU limit to ≥1_000_000.
+
+---
+
 ## [2.0.5] — 2026-04-29
 
 `discoverMarkets` gap fix. The keeper+indexer alignment audit on 2026-04-29

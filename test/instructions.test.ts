@@ -129,7 +129,7 @@ describe("instruction encoders", () => {
     expect(data[0]).toBe(IX_TAG.InitLP);
   });
 
-  it("encodeInitMarket produces 304-byte v12.19 base", () => {
+  it("encodeInitMarket produces 370-byte payload (304 base + 66 ext tail)", () => {
     const data = encodeInitMarket({
       admin: PublicKey.unique(), collateralMint: PublicKey.unique(),
       indexFeedId: "e62df6c8b4a85fe1a67db44dc12de5db330f7ac66b72dc658afedf0f4a415b43",
@@ -141,7 +141,7 @@ describe("instruction encoders", () => {
       liquidationBufferBps: "50", minLiquidationAbs: "1000000",
       minNonzeroMmReq: "1000", minNonzeroImReq: "2000",
     });
-    expect(data.length).toBe(304);
+    expect(data.length).toBe(370);
     expect(data[0]).toBe(IX_TAG.InitMarket);
   });
 
@@ -185,7 +185,7 @@ describe("instruction encoders", () => {
       liquidationBufferBps: "50", minLiquidationAbs: "1000000",
       minNonzeroMmReq: "1000", minNonzeroImReq: "2000",
     });
-    expect(data.length).toBe(304);
+    expect(data.length).toBe(370);
   });
 
   it("encodeCloseSlab produces 1 byte", () => {
