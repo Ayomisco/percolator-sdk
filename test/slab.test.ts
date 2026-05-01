@@ -660,14 +660,14 @@ console.log("\n✅ All slab tests passed!");
 //   last_crank_slot:344 gc_cursor:400 oi_eff_long_q:528 oi_eff_short_q:544
 // SBF offsets triangulated from known-good SBF anchors (c_tot=336, neg_pnl=616, f_long=648).
 {
-  console.log("\nTesting V12_19 SBF engine field offsets (96760-byte slabs from deployed mainnet ESa89R5...)...");
+  console.log("\nTesting V12_19 SBF engine field offsets (96784-byte slabs from deployed mainnet ESa89R5...)...");
 
   // V12_19 SBF small (--features small, MAX_ACCOUNTS=256) probe-confirmed values:
   //   HEADER_LEN = 136, CONFIG_LEN = 480, ENGINE_OFF = 616, ACCOUNT_SIZE = 360
-  //   SLAB_LEN = 96760 (NOT 94168 from cu_benchmark.rs which is stale)
+  //   SLAB_LEN = 96784 (NOT 94168 from cu_benchmark.rs which is stale)
   // Probe source: 2026-04-28 cargo build-sbf --features small with deliberately-wrong
   // const assertions in src/percolator.rs revealed authoritative SBF offsets.
-  const V12_19_SBF_SMALL_SIZE = 96_760;
+  const V12_19_SBF_SMALL_SIZE = 96_784;
   const layoutSbf = detectSlabLayout(V12_19_SBF_SMALL_SIZE);
   assert(layoutSbf !== null, `detectSlabLayout(${V12_19_SBF_SMALL_SIZE}) must return non-null`);
   assert(layoutSbf!.engineOff === 616, `V12_19 SBF engineOff should be 616, got ${layoutSbf!.engineOff}`);

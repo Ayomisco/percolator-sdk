@@ -7,6 +7,26 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [2.0.7] — 2026-05-01
+
+`SLAB_TIERS_V12_19` layout bump for the mainnet `af43efc` wrapper redeploy.
+
+### Changed
+
+- Updated v12.19 slab sizes to match the redeployed wrapper's `SLAB_LEN`.
+  The small tier used by mainnet is now `96_784` bytes. The prior SDK value
+  (`96_760`) causes `InitMarket` to fail with `InvalidSlabLen` (`0x4`) against
+  the new binary.
+- Derived v12.19 tier sizes now include the same +24 byte layout delta:
+  `micro=26_872`, `small=96_784`, `medium=376_432`, `large=1_495_024`.
+
+### Verified
+
+- Mainnet dry-run after the `af43efc` redeploy reached the wrapper and rejected
+  only the stale SDK slab size (`expected 0x17a10`, got `0x179f8`).
+
+---
+
 ## [2.0.6] — 2026-04-29
 
 `encodeInitMarket` always-ext-tail fix. End-to-end InitMarket simulation against the

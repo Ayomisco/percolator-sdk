@@ -594,7 +594,7 @@ describe("Layout verify: v12.17 configLen matches MarketConfig SBF size", () => 
   it("detectSlabLayout on the V12_17 small tier returns configLen === 512", () => {
     // V12_17 SBF small = 94168 bytes (cu_benchmark.rs constant, also confirmed via
     // V12_17_ENGINE_OFF_SBF=584 + 1264 + 92320). V12_17 MarketConfig = 512 bytes.
-    // V12_19 small is 96760 (probe-confirmed), separate tier.
+    // V12_19 small is 96784 (probe-confirmed), separate tier.
     const tier = SLAB_TIERS_V12_17["small"];
     expect(tier).toBeDefined();
     const layout = detectSlabLayout(tier.dataSize);

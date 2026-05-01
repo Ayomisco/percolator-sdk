@@ -614,7 +614,7 @@ export async function discoverMarkets(
   // GH#1234) must also be included; omitting them causes legacy on-chain slabs to be missed by
   // dataSize filter queries and fall through to memcmp with wrong maxAccounts hint.
   // 2026-04-29: SLAB_TIERS_V12_19 added — same class of bug. v12.19 mainnet slabs (deployed
-  // 2026-04-28 to ESa89R5...) produce 96760-byte (small) accounts that none of the older tiers
+  // 2026-05-01 to ESa89R5...) produce 96784-byte (small) accounts that none of the older tiers
   // match. Without this entry, discoverMarkets on the upgraded program returns 0 markets via the
   // dataSize-filter path and falls through to memcmp with wrong layout hints.
   const ALL_TIERS = [

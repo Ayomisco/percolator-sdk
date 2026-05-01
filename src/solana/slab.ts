@@ -906,7 +906,7 @@ for (const n of V12_17_TIERS) {
 // - CONFIG_LEN: 512 -> 480 (dropped max_insurance_floor and _iw_padding2)
 // - ENGINE_OFF: 584 -> 616
 // - ACCOUNT_SIZE: 352 -> 360
-// - SLAB_LEN small: 94168 -> 96760 (cu_benchmark.rs constant is stale)
+// - SLAB_LEN small: 94168 -> 96784 (cu_benchmark.rs constant is stale)
 // - RiskEngine grew substantially; accounts now inline within engine struct.
 const V12_19_HEADER_LEN_SBF      = 136;
 const V12_19_CONFIG_LEN          = 480;
@@ -961,13 +961,14 @@ const V12_19_SBF_CONFIG_PENDING_ADMIN_OFF       = 448;
 //                     + GEN_TABLE_LEN(N), where ENGINE_LEN(N) = 712 + bitmap_bytes
 //                     + 4 (num_used + free_head) + 2N (next_free) + 2N (prev_free)
 //                     + (8-byte align pad) + N*360 (accounts).
-// Result: micro=26848, small=96760 (probe-confirmed), medium=376408, large=1495000.
+// Result after af43efc wrapper redeploy: micro=26872, small=96784
+// (mainnet probe-confirmed), medium=376432, large=1495024.
 // NOTE: cu_benchmark.rs constants (19640/94168/372280/1484728) are STALE for v12.19.
 const V12_19_SIZES = new Map<number, number>([
-  [26848, 64],      // --features micro (derived)
-  [96760, 256],     // --features small (probe-confirmed; deployed mainnet ESa89R5...)
-  [376408, 1024],   // --features medium (derived)
-  [1495000, 4096],  // default features / large (derived)
+  [26872, 64],      // --features micro (derived)
+  [96784, 256],     // --features small (probe-confirmed; deployed mainnet ESa89R5...)
+  [376432, 1024],   // --features medium (derived)
+  [1495024, 4096],  // default features / large (derived)
 ]);
 
 /**
@@ -1588,10 +1589,10 @@ for (const [label, n] of [["Small", 256], ["Medium", 1024], ["Large", 4096]] as 
  * exports consumed by discovery.ts.
  */
 export const SLAB_TIERS_V12_19: Record<string, { maxAccounts: number; dataSize: number; label: string; description: string }> = {
-  micro:  { maxAccounts: 64,    dataSize: 26_848,    label: "Micro",  description: "64 slots (v12.19, --features micro)" },
-  small:  { maxAccounts: 256,   dataSize: 96_760,    label: "Small",  description: "256 slots (v12.19, --features small) — deployed mainnet ESa89R5..." },
-  medium: { maxAccounts: 1024,  dataSize: 376_408,   label: "Medium", description: "1024 slots (v12.19, --features medium)" },
-  large:  { maxAccounts: 4096,  dataSize: 1_495_000, label: "Large",  description: "4096 slots (v12.19, default features)" },
+  micro:  { maxAccounts: 64,    dataSize: 26_872,    label: "Micro",  description: "64 slots (v12.19, --features micro)" },
+  small:  { maxAccounts: 256,   dataSize: 96_784,    label: "Small",  description: "256 slots (v12.19, --features small) — deployed mainnet ESa89R5..." },
+  medium: { maxAccounts: 1024,  dataSize: 376_432,   label: "Medium", description: "1024 slots (v12.19, --features medium)" },
+  large:  { maxAccounts: 4096,  dataSize: 1_495_024, label: "Large",  description: "4096 slots (v12.19, default features)" },
 };
 
 /**
@@ -3607,4 +3608,3 @@ export function parseAllAccounts(data: Uint8Array): { idx: number; account: Acco
     account: parseAccount(data, idx),
   }));
 }
-

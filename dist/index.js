@@ -2333,13 +2333,13 @@ var V12_19_SBF_ENGINE_LAST_MARKET_SLOT_OFF = 640;
 var V12_19_SBF_ENGINE_F_LONG_NUM_OFF = 648;
 var V12_19_SBF_ENGINE_F_SHORT_NUM_OFF = 664;
 var V12_19_SIZES = /* @__PURE__ */ new Map([
-  [26848, 64],
+  [26872, 64],
   // --features micro (derived)
-  [96760, 256],
+  [96784, 256],
   // --features small (probe-confirmed; deployed mainnet ESa89R5...)
-  [376408, 1024],
+  [376432, 1024],
   // --features medium (derived)
-  [1495e3, 4096]
+  [1495024, 4096]
   // default features / large (derived)
 ]);
 function buildLayoutV12_19(maxAccounts, _dataLen) {
@@ -2876,10 +2876,10 @@ for (const [label, n] of [["Small", 256], ["Medium", 1024], ["Large", 4096]]) {
   SLAB_TIERS_V12_17[label.toLowerCase()] = { maxAccounts: n, dataSize: size, label, description: `${n} slots (v12.17)` };
 }
 var SLAB_TIERS_V12_19 = {
-  micro: { maxAccounts: 64, dataSize: 26848, label: "Micro", description: "64 slots (v12.19, --features micro)" },
-  small: { maxAccounts: 256, dataSize: 96760, label: "Small", description: "256 slots (v12.19, --features small) \u2014 deployed mainnet ESa89R5..." },
-  medium: { maxAccounts: 1024, dataSize: 376408, label: "Medium", description: "1024 slots (v12.19, --features medium)" },
-  large: { maxAccounts: 4096, dataSize: 1495e3, label: "Large", description: "4096 slots (v12.19, default features)" }
+  micro: { maxAccounts: 64, dataSize: 26872, label: "Micro", description: "64 slots (v12.19, --features micro)" },
+  small: { maxAccounts: 256, dataSize: 96784, label: "Small", description: "256 slots (v12.19, --features small) \u2014 deployed mainnet ESa89R5..." },
+  medium: { maxAccounts: 1024, dataSize: 376432, label: "Medium", description: "1024 slots (v12.19, --features medium)" },
+  large: { maxAccounts: 4096, dataSize: 1495024, label: "Large", description: "4096 slots (v12.19, default features)" }
 };
 function buildLayoutVSetDexPool(maxAccounts) {
   const engineOff = V_SETDEXPOOL_ENGINE_OFF;
