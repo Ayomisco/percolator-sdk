@@ -467,8 +467,11 @@ function encodeSetOraclePriceCap(args) {
     encU64(args.maxChangeE2bps)
   );
 }
-function encodeResolveMarket() {
-  return encU8(IX_TAG.ResolveMarket);
+var RESOLVE_MODE_ORDINARY = 0;
+var RESOLVE_MODE_DEGENERATE = 1;
+function encodeResolveMarket(args = {}) {
+  const mode = args.mode ?? RESOLVE_MODE_ORDINARY;
+  return concatBytes(encU8(IX_TAG.ResolveMarket), encU8(mode));
 }
 function encodeWithdrawInsurance() {
   return encU8(IX_TAG.WithdrawInsurance);
@@ -7091,6 +7094,8 @@ export {
   RAMP_START_BPS,
   RAYDIUM_CLMM_PROGRAM_ID,
   RENOUNCE_ADMIN_CONFIRMATION,
+  RESOLVE_MODE_DEGENERATE,
+  RESOLVE_MODE_ORDINARY,
   RpcPool,
   SLAB_MAGIC,
   SLAB_TIERS,

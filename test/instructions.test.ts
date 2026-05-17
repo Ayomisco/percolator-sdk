@@ -254,8 +254,15 @@ describe("instruction encoders", () => {
     expect(encodeCloseSlab()[0]).toBe(IX_TAG.CloseSlab);
   });
 
-  it("encodeResolveMarket produces 1 byte", () => {
-    expect(encodeResolveMarket()[0]).toBe(IX_TAG.ResolveMarket);
+  it("encodeResolveMarket produces tag + mode (default Ordinary = 2 bytes)", () => {
+    const ord = encodeResolveMarket();
+    expect(ord.length).toBe(2);
+    expect(ord[0]).toBe(IX_TAG.ResolveMarket);
+    expect(ord[1]).toBe(0); // Ordinary
+    const deg = encodeResolveMarket({ mode: 1 });
+    expect(deg.length).toBe(2);
+    expect(deg[0]).toBe(IX_TAG.ResolveMarket);
+    expect(deg[1]).toBe(1); // Degenerate
   });
 
   it("encodeWithdrawInsurance produces 1 byte", () => {

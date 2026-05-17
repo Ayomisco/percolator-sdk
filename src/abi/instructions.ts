@@ -823,12 +823,30 @@ export function encodeSetOraclePriceCap(args: SetOraclePriceCapArgs): Uint8Array
 }
 
 /**
- * ResolveMarket instruction data (1 byte)
- * Resolves a binary/premarket - sets RESOLVED flag, positions force-closed via crank.
- * Requires admin oracle price (authority_price_e6) to be set first.
+ * ResolveMode for ResolveMarket — wrapper expects this byte explicitly per
+ * upstream a7186d5 / PORT-1 / KL-WIRE-FORMAT-DIVERGENCE-2:
+ *   0 = Ordinary  (default; settles at last good oracle / hyperp mark)
+ *   1 = Degenerate (rate=0 dead-oracle settlement)
+ *   2 = REMOVED   (decoder rejects with InvalidInstructionData)
  */
-export function encodeResolveMarket(): Uint8Array {
-  return encU8(IX_TAG.ResolveMarket);
+export const RESOLVE_MODE_ORDINARY = 0 as const;
+export const RESOLVE_MODE_DEGENERATE = 1 as const;
+export type ResolveMode = typeof RESOLVE_MODE_ORDINARY | typeof RESOLVE_MODE_DEGENERATE;
+
+/**
+ * ResolveMarket instruction data (2 bytes: tag + mode).
+ * Resolves a market — sets RESOLVED flag, positions force-closed via crank.
+ * Requires admin oracle price (authority_price_e6) to be set first.
+ *
+ * @param args.mode 0 = Ordinary, 1 = Degenerate. Defaults to Ordinary.
+ *
+ * Wave 12-J: previously this encoder emitted only the tag byte; the wrapper's
+ * decoder requires a `mode: u8` per PORT-1. Calling without `mode` defaults
+ * to Ordinary (the historical implicit behavior).
+ */
+export function encodeResolveMarket(args: { mode?: ResolveMode } = {}): Uint8Array {
+  const mode = args.mode ?? RESOLVE_MODE_ORDINARY;
+  return concatBytes(encU8(IX_TAG.ResolveMarket), encU8(mode));
 }
 
 /**
