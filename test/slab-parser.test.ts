@@ -1,8 +1,9 @@
 import { describe, it, expect } from "vitest";
-import { PublicKey } from "@solana/web3.js";
+import { PublicKey, Connection } from "@solana/web3.js";
 import {
   parseHeader, parseConfig, parseEngine, parseAllAccounts, parseParams,
   detectSlabLayout, detectLayout, readNonce, readLastThrUpdateSlot,
+  fetchSlab,
 } from "../src/solana/slab.js";
 
 /**
@@ -226,5 +227,58 @@ describe("readNonce / readLastThrUpdateSlot null-layout guard", () => {
   it("readNonce succeeds for valid V0 slab", () => {
     const buf = buildMockSlab();
     expect(() => readNonce(buf)).not.toThrow();
+  });
+});
+
+// ──────────────────────────────────────────────────────────────────────────────
+// fetchSlab — owner validation
+// ──────────────────────────────────────────────────────────────────────────────
+
+describe("fetchSlab owner validation", () => {
+  const SLAB_KEY = new PublicKey("11111111111111111111111111111111");
+  const EXPECTED_OWNER = new PublicKey("FxfD37s1AZTeWfFQps9Zpebi2dNQ9QSSDtfMKdbsfKrD");
+  const WRONG_OWNER    = new PublicKey("4HcGCsyjAqnFua5ccuXyt8KRRQzKFbGTJkVChpS7Yfzy");
+
+  function makeConn(ownerForAccount: PublicKey): Connection {
+    return {
+      getAccountInfo: async (_key: PublicKey) => ({
+        data: Buffer.from(buildMockSlab()),
+        owner: ownerForAccount,
+        lamports: 1,
+        executable: false,
+        rentEpoch: 0,
+      }),
+    } as unknown as Connection;
+  }
+
+  function makeNotFoundConn(): Connection {
+    return {
+      getAccountInfo: async (_key: PublicKey) => null,
+    } as unknown as Connection;
+  }
+
+  it("fetchSlab resolves when no expectedOwner is provided", async () => {
+    const conn = makeConn(WRONG_OWNER);
+    await expect(fetchSlab(conn, SLAB_KEY)).resolves.toBeInstanceOf(Uint8Array);
+  });
+
+  it("fetchSlab resolves when owner matches expectedOwner", async () => {
+    const conn = makeConn(EXPECTED_OWNER);
+    await expect(fetchSlab(conn, SLAB_KEY, EXPECTED_OWNER)).resolves.toBeInstanceOf(Uint8Array);
+  });
+
+  it("fetchSlab throws on owner mismatch", async () => {
+    const conn = makeConn(WRONG_OWNER);
+    await expect(fetchSlab(conn, SLAB_KEY, EXPECTED_OWNER)).rejects.toThrow(/owner mismatch/);
+  });
+
+  it("fetchSlab throws descriptively on owner mismatch including addresses", async () => {
+    const conn = makeConn(WRONG_OWNER);
+    await expect(fetchSlab(conn, SLAB_KEY, EXPECTED_OWNER)).rejects.toThrow(EXPECTED_OWNER.toBase58());
+  });
+
+  it("fetchSlab throws on missing account", async () => {
+    const conn = makeNotFoundConn();
+    await expect(fetchSlab(conn, SLAB_KEY)).rejects.toThrow(/not found/);
   });
 });
